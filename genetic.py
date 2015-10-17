@@ -1,4 +1,7 @@
 # coding: utf-8
+
+# Original code from http://lethain.com/genetic-algorithms-cool-name-damn-simple/
+
 from random import randint, random
 from operator import add
 from functools import reduce
