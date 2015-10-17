@@ -1,16 +1,9 @@
 # Code adapted from http://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
-from enum import Enum
 from collections import namedtuple
 import timeit
 from random import randint
-from statistics import mean, stdev, pstdev
 
 Point = namedtuple("Point", ["x", "y"])
-
-class Orientation(Enum):
-    colinear            = 0
-    clockwise           = 1
-    counterclockwise    = 2
 
 def on_segment(p, q, r):
     """
@@ -27,7 +20,7 @@ def on_segment(p, q, r):
 def orientation(p, q, r):
     """
     To find orientation of ordered triplet(p, q, r).
-    The function returns following enum values (see Orientation class):
+    The function returns following values:
     0 --> p, q and r are colinear
     1 --> clockwise
     2 --> counterclockwise
@@ -39,11 +32,11 @@ def orientation(p, q, r):
              (q.x - p.x) * (r.y - q.y))
 
     if value == 0:
-        return Orientation.colinear
+        return 0
     elif value > 0:
-        return Orientation.clockwise
+        return 1
     else:
-        return Orientation.counterclockwise
+        return 2
 
 def do_intersect(p1, p2, q1, q2):
     """ Returns true if line p1p2 and line q1q2 intersect. """
@@ -59,19 +52,19 @@ def do_intersect(p1, p2, q1, q2):
 
     # Special Cases
     # p1, p2 and q1 are colinear and q1 lies on line p1p2
-    if (o1 == Orientation.colinear and on_segment(p1, q1, p2)):
+    if (o1 == 0 and on_segment(p1, q1, p2)):
         return True
 
     # p1, p2 and q2 are colinear and q2 lies on line p1p2
-    if (o2 == Orientation.colinear and on_segment(p1, q2, p2)):
+    if (o2 == 0 and on_segment(p1, q2, p2)):
         return True
 
     # q1, q2 and p1 are colinear and p1 lies on line q1q2
-    if (o3 == Orientation.colinear and on_segment(q1, p1, q2)):
+    if (o3 == 0 and on_segment(q1, p1, q2)):
         return True
 
     # q1, q2 and p2 are colinear and p2 lies on line q1q2
-    if (o4 == Orientation.colinear and on_segment(q1, p2, q2)):
+    if (o4 == 0 and on_segment(q1, p2, q2)):
         return True
 
     # Lines don't intersect
@@ -93,7 +86,7 @@ def setup_benchmark():
     # Generate points
     min = 0
     max = 100
-    n = 2000000
+    n = 1000000
     benchmark_points = list()
     for i in range(n):
         p1 = Point(randint(min, max), randint(min, max))
@@ -110,9 +103,8 @@ def main():
     """ Benchmark """
     setup_benchmark()
     results = (timeit.Timer("benchmark()", setup="from __main__ import benchmark").repeat(10, 1))
+    print(results)
     print("Minimum: " + str(min(results)))
-    print("Average: " + str(mean(results)))
-    print("Population standard deviation: " + str(pstdev(results)))
 
 if __name__ == "__main__":
     main()
