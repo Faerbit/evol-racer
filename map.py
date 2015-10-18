@@ -56,9 +56,9 @@ class Map():
             q = (line[1][0] + offset, line[1][1] + offset)
             walls.add(svg.line(p, q))
         start_x, start_y = self.start
-        svg.add(svg.circle((start_x + offset, start_y + offset), fill="green"))
+        svg.add(svg.circle((start_x + offset, start_y + offset), 2, fill="green"))
         target_x, target_y = self.target
-        svg.add(svg.circle((target_x + offset, target_y + offset), fill="blue"))
+        svg.add(svg.circle((target_x + offset, target_y + offset), 2, fill="blue"))
         svg.save()
 
 def main():
