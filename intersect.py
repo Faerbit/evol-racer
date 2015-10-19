@@ -38,7 +38,7 @@ def orientation(p, q, r):
     else:
         return 2
 
-def do_intersect(p1, p2, q1, q2):
+def do_intersect((p1, p2), (q1, q2)):
     """ Returns true if line p1p2 and line q1q2 intersect. """
 
     o1 = orientation(p1, p2, q1)
@@ -97,7 +97,7 @@ def setup_benchmark():
 
 def benchmark():
     for lines in benchmark_points:
-        do_intersect(lines[0], lines[1], lines[2], lines[3])
+        do_intersect((lines[0], lines[1]), (lines[2], lines[3]))
 
 def main():
     """ Benchmark """
