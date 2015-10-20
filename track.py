@@ -16,7 +16,7 @@ class Track():
         self.positions = [map.start]
 
 
-    def accelerate(self, vector, check_for_collision=False):
+    def accelerate(self, vector, check=True, last_run=False):
         """ Accelerate into the given direction. """
         self.acceleration_vectors.append(vector)
         self.velocity_vector = Vector(self.velocity_vector.x + vector.x,
@@ -24,8 +24,17 @@ class Track():
         new_position = Point(self.positions[-1].x + self.velocity_vector.x,
                              self.positions[-1].y + self.velocity_vector.y)
         self.positions.append(new_position)
-        if check_for_collision:
-            return self.check_collisions(self, len(self.positions) - 1)
+        if check:
+            if last_run:
+                return False
+            elif self.positions[-1] == map.target:
+                # accelerate one last time because the car must stop at the target
+                self.accelerate(self, Vector(0,0), last_run=True)
+            elif self.check_collisions(self, len(self.positions) - 1):
+                return False
+            else:
+                return True
+
 
     def check_collisions(self, from_position_index=1, verbose=False):
         """ Check if track collides with map. """
