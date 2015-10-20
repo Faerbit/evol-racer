@@ -14,6 +14,7 @@ class Track():
         self.velocity_vector = Vector(0, 0)
         self.acceleration_vectors = [Vector(0,0)]
         self.positions = [map.start]
+        self.collision = False
 
 
     def accelerate(self, vector, check=True, last_run=False):
@@ -31,6 +32,7 @@ class Track():
                 # accelerate one last time because the car must stop at the target
                 self.accelerate(self, Vector(0,0), last_run=True)
             elif self.check_collisions(self, len(self.positions) - 1):
+                self.collision = True
                 return False
             else:
                 return True
