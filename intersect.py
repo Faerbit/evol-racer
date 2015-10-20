@@ -9,6 +9,11 @@ def on_segment(p, q, r):
     """
     Given three colinear points p, q, r,
     the function checks if point q lies on line segment pr
+
+    p: coordinate
+    q: coordinate
+    r: coordinate
+
     """
 
     if (q.x <= max(p.x, r.x) and q.x >= min(p.x, r.x) and
@@ -20,6 +25,11 @@ def on_segment(p, q, r):
 def orientation(p, q, r):
     """
     To find orientation of ordered triplet(p, q, r).
+
+    p: coordinate
+    q: coordinate
+    r: coordinate
+
     The function returns following values:
     0 --> p, q and r are colinear
     1 --> clockwise
@@ -39,7 +49,12 @@ def orientation(p, q, r):
         return 2
 
 def _do_intersect(p, q):
-    """Returns true if line p and line q intersect."""
+    """
+    Returns true if line p and line q intersect.
+
+    p: line point
+    q: line point
+    """
 
     # Unpack tuples
     p1, p2 = p
@@ -75,7 +90,13 @@ def _do_intersect(p, q):
     return False
 
 def do_intersect(p, q, verbose=False):
-    """Returns true if line p and line q intersect."""
+    """
+    Returns true if line p and line q intersect.
+
+    p: line point
+    q: line point
+    verbose: verbose flag
+    """
 
     # wrapper which is verbose if necessary
     if _do_intersect(p, q):
@@ -86,6 +107,7 @@ def do_intersect(p, q, verbose=False):
         if verbose:
             print("Doesn't intersect")
         return False
+
 
 def setup_benchmark():
     """Generates random points for benchmark purposes."""
