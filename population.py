@@ -26,14 +26,14 @@ class Population():
         return track
 
 
-    def __init__(self, map, count, max_acceleration, distance_factor,
+    def __init__(self, map, population_size, max_acceleration, distance_factor,
                  collision_penalty, retain_percentage, random_select_chance,
                  mutate_chance):
         """
         Creates a number of individuals (i.e. a population).
 
         map: the map on which the tracks should take place
-        count: the number of individuals in the population
+        population_size: the number of individuals in the population
         max_acceleration: the maximum acceleration allowed on the map
         distance_factor: a weight for the fitness function
         collision_penalty: fitness function penalty for collisions
@@ -43,14 +43,14 @@ class Population():
         mutate_chance: chance for randomly mutating some individuals
         """
         self.map = map
-        self.max_acceleration = max_acceleration
-        self.distance_factor = distance_factor
-        self.collision_penalty = collision_penalty
-        self.retain_percentage = retain_percentage
-        self.random_select_chance = random_select_chance
-        self.mutate_chance = mutate_chance
+        self.max_acceleration = int(max_acceleration)
+        self.distance_factor = float(distance_factor)
+        self.collision_penalty = float(collision_penalty)
+        self.retain_percentage = float(retain_percentage)
+        self.random_select_chance = float(random_select_chance)
+        self.mutate_chance = float(mutate_chance)
         self.tracks = []
-        for i in range(count):
+        for i in range(int(population_size)):
             self.tracks.append(self.individual())
 
 
@@ -73,20 +73,23 @@ class Population():
         return distance + length + collision_penalty
 
 
-    def grade(self):
-        """Find average fitness for the population."""
+    def grade(self, population):
+        """
+        Find average fitness for the population.
+
+        population: graded population tuples
+        """
         sum = 0
-        for track in self.tracks:
-            fitness, _ = track
+        for fitness, _ in population:
             sum += fitness
-        return sum/len(self.tracks)
+        return sum/len(population)
 
 
 
     def evolve(self):
         """Evolves the population."""
         graded = [ (self.fitness(x), x) for x in self.tracks ]
-        grade = grade()
+        grade = self.grade(graded)
         graded = [ x[1] for x in sorted(graded, key=itemgetter(0)) ]
         retain_length = int(len(graded)*self.retain_percentage)
         parents = graded[:retain_length]
