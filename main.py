@@ -50,3 +50,7 @@ for i in range(max_timesteps):
         filename = ("test_{:0" + str(len(str(max_timesteps))) + "d}.svg").format(i)
         save_svg(filename, map, population.tracks, out_directory=out_directory)
     population.evolve()
+
+if write_plots:
+    filename = ("test_{:0" + str(len(str(max_timesteps))) + "d}.svg").format(i)
+    save_svg(filename, map, population.tracks, out_directory=out_directory)
