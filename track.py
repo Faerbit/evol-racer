@@ -18,12 +18,12 @@ class Track():
     def accelerate(self, vector):
         """ Accelerate into the given direction. """
         self.acceleration_vectors.append(vector)
-        new_velocity_vector = Vector(velocity_vectors[-1].x + vector.x,
-                                     velocity_vectors[-1].y + vector.y)
-       self.velocity_vectors.append(new_velocity_vector)
-       new_position = Point(positions[-1].x + new_velocity_vector.x,
-                            positions[-1].y + new_velocity_vector.y)
-       self.positions.append(new_position)
+        new_velocity_vector = Vector(self.velocity_vectors[-1].x + vector.x,
+                                     self.velocity_vectors[-1].y + vector.y)
+        self.velocity_vectors.append(new_velocity_vector)
+        new_position = Point(self.positions[-1].x + new_velocity_vector.x,
+                             self.positions[-1].y + new_velocity_vector.y)
+        self.positions.append(new_position)
 
     def check_collisions(self, from_position_index=1):
         """ Check if track collides with map. """
