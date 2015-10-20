@@ -7,9 +7,14 @@ Vector = namedtuple("Vector", ["x", "y"])
 
 
 class Track():
-    """ Represents a track a car could take across the map. """
+    """Represents a track a car could take across the map."""
 
     def __init__(self, map):
+        """
+        Creates a track.
+
+        map: the map on which the track should be
+        """
         self.map = map
         self.velocity_vector = Vector(0, 0)
         self.acceleration_vectors = [Vector(0,0)]
@@ -20,8 +25,15 @@ class Track():
         return str(self.acceleration_vectors)
 
 
-    def accelerate(self, vector, check=True, last_run=False):
-        """ Accelerate into the given direction. """
+    def accelerate(self, vector, check=True, _last_run=False):
+        """
+        Accelerate into the given direction.
+
+        vector: acceleration vector
+        check: if set the methods checks if further acceleration is
+               possible/necessary
+        _last_run: internal parameter
+        """
         self.acceleration_vectors.append(vector)
         self.velocity_vector = Vector(self.velocity_vector.x + vector.x,
                                       self.velocity_vector.y + vector.y)
@@ -29,11 +41,11 @@ class Track():
                              self.positions[-1].y + self.velocity_vector.y)
         self.positions.append(new_position)
         if check:
-            if last_run:
+            if _last_run:
                 return False
             elif self.positions[-1] == self.map.target:
                 # accelerate one last time because the car must stop at the target
-                self.accelerate(self, Vector(0,0), last_run=True)
+                self.accelerate(self, Vector(0,0), _last_run=True)
             elif self.check_collisions(len(self.positions) - 1):
                 self.collision = True
                 return False
@@ -42,7 +54,12 @@ class Track():
 
 
     def check_collisions(self, from_position_index=1, verbose=False):
-        """ Check if track collides with map. """
+        """
+        Check if track collides with map.
+
+        from_position_index: check only position from this index
+        verbose: verbosity flag
+        """
         for i in range(from_position_index, len(self.positions)):
             for wall in self.map.map:
                 if do_intersect((self.positions[i-1], self.positions[i]),
@@ -54,20 +71,3 @@ class Track():
         if verbose:
             print("No collision detected.")
         return False
-
-
-def main():
-    map = Map()
-    map.load("test.map")
-    track = Track(map)
-    for i in range(3):
-        track.accelerate(Vector(10, i))
-        print(track.positions)
-        track.check_collisions(verbose=True)
-        filename = "test_{:03d}.svg".format(i)
-        save_svg(filename, map, [track.positions])
-
-
-
-if __name__ == "__main__":
-    main()
