@@ -16,7 +16,7 @@ class Track():
         self.positions = [map.start]
 
 
-    def accelerate(self, vector):
+    def accelerate(self, vector, check_for_collision=False):
         """ Accelerate into the given direction. """
         self.acceleration_vectors.append(vector)
         self.velocity_vector = Vector(self.velocity_vector.x + vector.x,
@@ -24,6 +24,8 @@ class Track():
         new_position = Point(self.positions[-1].x + self.velocity_vector.x,
                              self.positions[-1].y + self.velocity_vector.y)
         self.positions.append(new_position)
+        if check_for_collision:
+            return self.check_collisions(self, len(self.positions) - 1)
 
     def check_collisions(self, from_position_index=1, verbose=False):
         """ Check if track collides with map. """
