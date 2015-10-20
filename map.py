@@ -11,6 +11,11 @@ class Map():
     """
 
     def __init__(self, filename=""):
+        """
+        Creates a map.
+
+        filename: if given loads the map directly
+        """
         self.map = list()
         self.start = Point(0, 0)
         self.target = Point(0, 0)
@@ -21,11 +26,20 @@ class Map():
         return str(self.map)
 
     def add_line(self, p, q):
-        """ Adds a line from (p1, p2) to (q1, q2). """
+        """
+        Adds a line from p to q.
+
+        p: line point
+        q: line point
+        """
         self.map.append((p, q))
 
     def load(self, filename):
-        """ Loads a map from a file. """
+        """
+        Loads a map from a file.
+
+        filename: the filename of the map file
+        """
         for line in open(filename):
             split_line = line.split()
             if split_line[0].lower() == "w":
@@ -38,14 +52,3 @@ class Map():
                     self.target = Point(int(split_line[1]), int(split_line[2]))
             else:
                 raise Exception("Unsupported character at the beginning of line: " + line)
-
-
-
-def main():
-    _map = Map()
-    _map.load("test.map")
-    save_svg("test.svg", _map)
-
-
-if __name__ == "__main__":
-    main()
