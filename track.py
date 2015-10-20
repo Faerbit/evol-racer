@@ -27,11 +27,27 @@ class Track():
 
     def check_collisions(self, from_position_index=1):
         """ Check if track collides with map. """
-        for i in range(from_position_index, len(positions) - 1):
-            for j in self.map.map:
+        for i in range(from_position_index, len(self.positions)):
+            for wall in self.map.map:
                 if do_intersect((self.positions[i-1], self.positions[i]),
-                                 self.map.map[j]):
+                                 wall):
                     return True
 
         return False
 
+
+def main():
+    map = Map()
+    map.load("test.map")
+    track = Track(map)
+    track.accelerate(Vector(100, 0))
+    print(track.positions)
+    if track.check_collisions():
+        print("Collision detected.")
+    else:
+        print("No collision detected.")
+
+
+
+if __name__ == "__main__":
+    main()
