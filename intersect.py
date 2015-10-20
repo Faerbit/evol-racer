@@ -39,7 +39,7 @@ def orientation(p, q, r):
         return 2
 
 def _do_intersect(p, q):
-    """ Returns true if line p1p2 and line q1q2 intersect. """
+    """Returns true if line p and line q intersect."""
 
     # Unpack tuples
     p1, p2 = p
@@ -75,8 +75,9 @@ def _do_intersect(p, q):
     return False
 
 def do_intersect(p, q, verbose=False):
-    """ Returns true if line p1p2 and line q1q2 intersect. """
+    """Returns true if line p and line q intersect."""
 
+    # wrapper which is verbose if necessary
     if _do_intersect(p, q):
         if verbose:
             print("Intersects")
@@ -87,7 +88,7 @@ def do_intersect(p, q, verbose=False):
         return False
 
 def setup_benchmark():
-    """ Generates random points for benchmark purposes. """
+    """Generates random points for benchmark purposes."""
     global benchmark_points
     # Generate points
     min = 0
@@ -106,7 +107,7 @@ def benchmark():
         do_intersect((lines[0], lines[1]), (lines[2], lines[3]))
 
 def main():
-    """ Benchmark """
+    """Benchmark"""
     setup_benchmark()
     results = (timeit.Timer("benchmark()", setup="from __main__ import benchmark").repeat(10, 1))
     print(results)
