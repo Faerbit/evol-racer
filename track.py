@@ -1,6 +1,7 @@
 from collections import namedtuple
 from map import Map, Point
 from intersect import do_intersect
+from graphics import save_svg
 
 Vector = namedtuple("Vector", ["x", "y"])
 
@@ -47,6 +48,8 @@ def main():
         track.accelerate(Vector(10, i))
         print(track.positions)
         track.check_collisions(verbose=True)
+        filename = "test_{:03d}.svg".format(i)
+        save_svg(filename, map, [track.positions])
 
 
 
