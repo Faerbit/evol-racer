@@ -26,15 +26,29 @@ class Population():
         return track
 
 
-    def __init__(self, map, count, max_acceleration, collision_penalty):
+    def __init__(self, map, count, max_acceleration, distance_factor,
+                 collision_penalty, retain_percentage, random_select_chance,
+                 mutate_chance):
         """
         Creates a number of individuals (i.e. a population).
 
+        map: the map on which the tracks should take place
         count: the number of individuals in the population
+        max_acceleration: the maximum acceleration allowed on the map
+        distance_factor: a weight for the fitness function
+        collision_penalty: fitness function penalty for collisions
+        retain_percentage: how much of the population
+                           should be retained during evolution
+        random_select_chance: how many bad individuals should live on anyway
+        mutate_chance: chance for randomly mutating some individuals
         """
         self.map = map
-        self.collision_penalty = collision_penalty
         self.max_acceleration = max_acceleration
+        self.distance_factor = distance_factor
+        self.collision_penalty = collision_penalty
+        self.retain_percentage = retain_percentage
+        self.random_select_chance = random_select_chance
+        self.mutate_chance = mutate_chance
         self.tracks = []
         for i in range(count):
             self.tracks.append(self.individual())
@@ -46,9 +60,12 @@ class Population():
 
         individual: the individual to evaluate
         """
+        # calculate euclidean distance
         distance_x = float(individual.positions[-1].x - self.map.target.x)
         distance_y = float(individual.positions[-1].y - self.map.target.y)
         distance = sqrt(distance_x * distance_x + distance_y * distance_y)
+        # weight distance
+        distance *= self.distance_factor
         length = len(individual.positions)
         collision_penalty = 0
         if individual.collision:
@@ -56,30 +73,32 @@ class Population():
         return distance + length + collision_penalty
 
 
-    def grade(self, population):
-        """Find average fitness for a population."""
+    def grade(self):
+        """Find average fitness for the population."""
         sum = 0
-        for track in population:
+        for track in self.tracks:
             fitness, _ = track
             sum += fitness
-        return sum/len(population)
+        return sum/len(self.tracks)
 
 
 
-    def evolve(self, retain=0.2, random_select=0.05, mutate=0.01):
+    def evolve(self):
+        """Evolves the population."""
         graded = [ (self.fitness(x), x) for x in self.tracks ]
+        grade = grade()
         graded = [ x[1] for x in sorted(graded, key=itemgetter(0)) ]
-        retain_length = int(len(graded)*retain)
+        retain_length = int(len(graded)*self.retain_percentage)
         parents = graded[:retain_length]
 
         # randomly add other individuals to promote genetic diversity
         for individual in graded[retain_length:]:
-            if random_select > random():
+            if self.random_select_chance > random():
                 parents.append(individual)
 
         # mutate some individuals
         for individual in parents:
-            if mutate > random():
+            if self.mutate_chance > random():
                 pos_to_mutate = randint(0, len(individual.acceleration_vectors) - 1)
                 # choose angle
                 angle = random() * 2 * pi
@@ -116,27 +135,4 @@ class Population():
 
         parents.extend(children)
         self.tracks = parents
-
-
-def main():
-    target      = 371
-    p_count     = 100
-    i_length    = 5
-    i_min       = 0
-    i_max       = 100
-    p = population(p_count, i_length, i_min, i_max)
-    fitness_history = [grade(p,target),]
-    for i in range(100):
-        p = evolve(p, target)
-        fitness_history.append(grade(p, target))
-        if grade(p, target) == 0:
-            break
-
-    print(str(len(fitness_history)) + " generations were needed:")
-    for datum in fitness_history:
-        print(datum)
-    print(p)
-
-
-if __name__ == "__main__":
-    main()
+        return grade
