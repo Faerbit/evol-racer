@@ -25,14 +25,18 @@ class Track():
                              self.positions[-1].y + new_velocity_vector.y)
         self.positions.append(new_position)
 
-    def check_collisions(self, from_position_index=1):
+    def check_collisions(self, from_position_index=1, verbose=False):
         """ Check if track collides with map. """
         for i in range(from_position_index, len(self.positions)):
             for wall in self.map.map:
                 if do_intersect((self.positions[i-1], self.positions[i]),
                                  wall):
+                    if verbose:
+                        print("Collision detected.")
                     return True
 
+        if verbose:
+            print("No collision detected.")
         return False
 
 
@@ -40,12 +44,10 @@ def main():
     map = Map()
     map.load("test.map")
     track = Track(map)
-    track.accelerate(Vector(100, 0))
-    print(track.positions)
-    if track.check_collisions():
-        print("Collision detected.")
-    else:
-        print("No collision detected.")
+    for i in range(3):
+        track.accelerate(Vector(10, 0))
+        print(track.positions)
+        track.check_collisions(verbose=True)
 
 
 
