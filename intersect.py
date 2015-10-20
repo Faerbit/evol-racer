@@ -38,7 +38,7 @@ def orientation(p, q, r):
     else:
         return 2
 
-def do_intersect(p, q):
+def _do_intersect(p, q):
     """ Returns true if line p1p2 and line q1q2 intersect. """
 
     # Unpack tuples
@@ -74,14 +74,16 @@ def do_intersect(p, q):
     # Lines don't intersect
     return False
 
-def do_verbose_intersect(p, q):
-    """ Prints result of do_intersect. """
+def do_intersect(p, q, verbose=False):
+    """ Returns true if line p1p2 and line q1q2 intersect. """
 
-    if do_intersect(p, q):
-        print("Yes!")
+    if _do_intersect(p, q):
+        if verbose:
+            print("Intersects")
         return True
     else:
-        print("No!")
+        if verbose:
+            print("Doesn't intersect")
         return False
 
 def setup_benchmark():
