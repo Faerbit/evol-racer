@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # Original code from http://lethain.com/genetic-algorithms-cool-name-damn-simple/
 
 from random import randint, random
@@ -7,13 +5,14 @@ from operator import add
 from functools import reduce
 from math import sin, cos, pi, sqrt
 from track import Track, Vector
+from operator import itemgetter
 
 class Population():
     """ A population of tracks."""
 
     def individual(self):
         """"Creates a member of the population."""
-        track = Track()
+        track = Track(self.map)
         work = True
         while work:
             # choose angle
@@ -23,15 +22,17 @@ class Population():
             x = int(round(sin(angle) * length))
             y = int(round(cos(angle) * length))
             acceleration_vector = Vector(x, y)
-            work = track.accelerate(acceleration_vector):
+            work = track.accelerate(acceleration_vector)
+        return track
 
 
-    def __init__(self, count, max_acceleration, collision_penalty):
+    def __init__(self, map, count, max_acceleration, collision_penalty):
         """
         Creates a number of individuals (i.e. a population).
 
         count: the number of individuals in the population
         """
+        self.map = map
         self.collision_penalty = collision_penalty
         self.max_acceleration = max_acceleration
         self.tracks = []
@@ -39,24 +40,23 @@ class Population():
             self.tracks.append(self.individual())
 
 
-    def fitness(self, individual, target):
+    def fitness(self, individual):
         """
         Determine the fitness of an individual. Lower is better.
 
         individual: the individual to evaluate
-        target: the target on the map
         """
-        distance_x = float(individual.positions[-1].x - target.x)
-        distance_y = float(individual.positions[-1].y - target.y)
+        distance_x = float(individual.positions[-1].x - self.map.target.x)
+        distance_y = float(individual.positions[-1].y - self.map.target.y)
         distance = sqrt(distance_x * distance_x + distance_y * distance_y)
         length = len(individual.positions)
         collision_penalty = 0
-        if individuals.collision:
+        if individual.collision:
             collision_penalty = self.collision_penalty
         return distance + length + collision_penalty
 
 
-    def grade(population):
+    def grade(self, population):
         """Find average fitness for a population."""
         sum = 0
         for track in population:
@@ -66,9 +66,9 @@ class Population():
 
 
 
-    def evolve(target, retain=0.2, random_select=0.05, mutate=0.01):
-        graded = [ (fitness(x, target), x) for x in tracks ]
-        graded = [ x[1] for x in sorted(graded) ]
+    def evolve(self, retain=0.2, random_select=0.05, mutate=0.01):
+        graded = [ (self.fitness(x), x) for x in self.tracks ]
+        graded = [ x[1] for x in sorted(graded, key=itemgetter(0)) ]
         retain_length = int(len(graded)*retain)
         parents = graded[:retain_length]
 
@@ -92,23 +92,30 @@ class Population():
 
         # crossover parents to create children
         parents_length = len(parents)
-        desired_length = len(population) - parents_length
+        desired_length = len(self.tracks) - parents_length
         children = []
         for i in range(desired_length):
-            male = randint(0, parents_length - 1)
-            female = randint(0, parents_length - 1)
-            if male != female:
-                male = parents[male]
-                female = parents[female]
-                half = int(len(male) / 2)
-                child = Track()
-                child.acceleration_vectors = male.acceleration_vectors[:half] +
-                    female.acceleration_vectors[half:]
-                for i in range(acceleration_vectors):
-                    child.accelerate(i)
-                children.append(child)
+            male = 0
+            female = 0
+            while male == female:
+                male = randint(0, parents_length - 1)
+                female = randint(0, parents_length - 1)
+            male = parents[male]
+            female = parents[female]
+            half_male = int(len(male.acceleration_vectors) / 2)
+            half_female = int(len(female.acceleration_vectors) / 2)
+            child = Track(self.map)
+            child.acceleration_vectors = (male.acceleration_vectors[:half_male] +
+                female.acceleration_vectors[half_female:] )
+            for i, vector in enumerate(child.acceleration_vectors):
+                working = child.accelerate(vector)
+                if not working:
+                    child.acceleration_vectors = child.acceleration_vectors[:i]
+                    break
+            children.append(child)
 
         parents.extend(children)
+        self.tracks = parents
 
 
 def main():

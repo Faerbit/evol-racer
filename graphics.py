@@ -31,8 +31,14 @@ def save_svg(filename, map, tracks=[], offset=5, out_directory="out"):
                                                 randint(0, 255),
                                                 randint(0, 255))
         svg_track = svg.add(svg.g(id=id, stroke=color))
-        for i in range(1, len(track)):
-            p = (track[i-1].x + offset, track[i-1].y + offset)
-            q = (track[i].x + offset, track[i].y + offset)
-            svg_track.add(svg.line(p, q))
+        for i in range(1, len(track.positions)):
+            p_x = min(max_x + offset, track.positions[i-1].x + offset)
+            p_x = max(p_x, 0)
+            p_y = min(max_y + offset, track.positions[i-1].y + offset)
+            p_y = max(p_y, 0)
+            q_x = min(max_x + offset, track.positions[i].x + offset)
+            q_x = max(q_x, 0)
+            q_y = min(max_y + offset, track.positions[i].y + offset)
+            q_y = max(q_y, 0)
+            svg_track.add(svg.line((p_x, p_y), (q_x, q_y)))
     svg.save()

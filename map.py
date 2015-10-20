@@ -10,10 +10,12 @@ class Map():
     Representing a map which contains walls, a starting point and a target.
     """
 
-    def __init__(self):
+    def __init__(self, filename=""):
         self.map = list()
         self.start = Point(0, 0)
         self.target = Point(0, 0)
+        if filename:
+            self.load(filename)
 
     def __repr__(self):
         return str(self.map)
