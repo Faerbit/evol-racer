@@ -38,8 +38,12 @@ def orientation(p, q, r):
     else:
         return 2
 
-def do_intersect((p1, p2), (q1, q2)):
+def do_intersect(p, q):
     """ Returns true if line p1p2 and line q1q2 intersect. """
+
+    # Unpack tuples
+    p1, p2 = p
+    q1, q2 = q
 
     o1 = orientation(p1, p2, q1)
     o2 = orientation(p1, p2, q2)
@@ -70,10 +74,10 @@ def do_intersect((p1, p2), (q1, q2)):
     # Lines don't intersect
     return False
 
-def do_verbose_intersect(p1, p2, q1, q2):
+def do_verbose_intersect(p, q):
     """ Prints result of do_intersect. """
 
-    if do_intersect(p1, p2, q1, q2):
+    if do_intersect(p, q):
         print("Yes!")
         return True
     else:
@@ -86,7 +90,7 @@ def setup_benchmark():
     # Generate points
     min = 0
     max = 100
-    n = 1000000
+    n = 10000
     benchmark_points = list()
     for i in range(n):
         p1 = Point(randint(min, max), randint(min, max))
