@@ -55,7 +55,8 @@ def save_svg(filename, map, tracks=[], grade="", border=5, out_directory="out"):
             q_y = min(max_y + 2 * border, track.positions[i].y + border)
             q_y = max(q_y, 0)
             svg_track.add(svg.line((p_x, p_y), (q_x, q_y)))
+    # print grade if supplied
     if grade:
         string = "Grade: {:3.2f}".format(grade)
-        svg.add(svg.text(string, insert=(0.6*max_x, 0.2*max_y), fill="black", style="font-size:8"))
+        svg.add(svg.text(string, insert=(0.5*max_x + border, 0.1*max_y + border), fill="black", style="font-size:8"))
     svg.save()
