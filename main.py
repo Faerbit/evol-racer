@@ -100,6 +100,9 @@ class Interface():
             self.init_msg("Cleaning previous plots ...", ok=True)
 
         map = Map(map_file_name)
+        self.init_msg("Saving map ...", ok=False)
+        save_svg("map.svg", map, out_directory=out_directory)
+        self.init_msg("Saving map ...", ok=True)
         self.init_msg("Generating population ...", ok=False)
         population = Population(
                 map=map,
