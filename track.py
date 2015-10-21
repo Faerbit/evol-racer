@@ -44,8 +44,9 @@ class Track():
             if _last_run:
                 return False
             elif self.positions[-1] == self.map.target:
-                # accelerate one last time because the car must stop at the target
-                self.accelerate(Vector(0,0), _last_run=True)
+                # accelerate(brake) one last time because the car must stop at the target
+                brake_vector = Vector(-vector.x, -vector.y)
+                self.accelerate(brake_vector, _last_run=True)
             elif self.check_collisions(len(self.positions) - 1):
                 self.collision = True
                 return False
