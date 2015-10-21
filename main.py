@@ -127,7 +127,9 @@ class Interface():
 
         # write final plot
         if write_plots:
+            self.status_msg(self.max_timesteps, writing=True)
             save_svg(self.filename(self.max_timesteps), map, population.tracks, out_directory=out_directory)
+            self.status_msg(self.max_timesteps, writing=False)
 
 if __name__ == "__main__":
     interface = Interface()
