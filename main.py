@@ -51,7 +51,8 @@ class Interface():
         """Convenience function for status messages."""
         timestep_mean = float(self.timestep_durations.average)
         write_mean    = float(self.write_durations.average)
-        string = ("\rCurrent timestep: {:>" + str(len(str(self.max_timesteps)) + 2) + "d} -- {:>3.5f} Gen/s --- {:>3.5f} s per file").format(timestep, timestep_mean, write_mean)
+        string = ("\rCurrent timestep: {:>" + str(len(str(self.max_timesteps)) + 2) +
+                  "d} -- {:>3.5f} Gen/s --- {:>3.5f} s per file").format(timestep, timestep_mean, write_mean)
         if not writing:
             sys.stdout.write("{:100s}".format(string))
         else:
