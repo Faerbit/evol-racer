@@ -7,7 +7,6 @@ import sys
 from map import Map
 from population import Population
 from graphics import save_svg
-from shutil import rmtree
 from contexttimer import Timer
 from collections import deque
 
@@ -97,7 +96,7 @@ class Interface():
         self.init_msg("Reading config ...", ok=True)
         if clean_previous and os.path.exists(out_directory):
             self.init_msg("Cleaning previous plots ...", ok=False)
-            rmtree(out_directory)
+            os.system("rm -rf " + out_directory + "/*")
             self.init_msg("Cleaning previous plots ...", ok=True)
 
         map = Map(map_file_name)
