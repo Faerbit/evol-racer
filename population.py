@@ -13,20 +13,22 @@ class Population():
     def individual(self):
         """"Creates a member of the population."""
         track = Track(self.map)
-        work = True
-        while work:
-            acceleration_vector = Vector(0, 0)
-            while acceleration_vector == Vector(0, 0):
-                # choose angle
-                angle = random() * 2 * pi
-                # choose length
-                length = random() * self.max_acceleration
-                x = int(round(sin(angle) * length))
-                y = int(round(cos(angle) * length))
-                acceleration_vector = Vector(x, y)
-            work = track.accelerate(acceleration_vector)
+        while track.accelerate(self.random_vector()):
+            pass
         return track
 
+    def random_vector(self):
+        """Returns a vector of random lenght and direction."""
+        vector = Vector(0, 0)
+        while vector == Vector(0, 0):
+            # choose angle
+            angle = random() * 2 * pi
+            # choose length
+            length = random() * self.max_acceleration
+            x = int(round(sin(angle) * length))
+            y = int(round(cos(angle) * length))
+            vector = Vector(x, y)
+        return vector
 
     def __init__(self, map, population_size, max_acceleration, distance_factor,
                  collision_penalty, retain_percentage, random_select_chance,
@@ -131,9 +133,14 @@ class Population():
             child_acceleration_vectors = (male.acceleration_vectors[:half_male] +
                 female.acceleration_vectors[half_female:] )
             child = Track(self.map)
+            work = False
             for vector in child_acceleration_vectors:
-                if not child.accelerate(vector):
+                work = child.accelerate(vector)
+                if not work:
                     break
+            if work:
+                while child.accelerate(self.random_vector()):
+                    pass
             children.append(child)
 
         parents.extend(children)
