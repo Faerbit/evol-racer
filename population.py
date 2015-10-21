@@ -128,13 +128,11 @@ class Population():
             female = parents[female]
             half_male = int(len(male.acceleration_vectors) / 2)
             half_female = int(len(female.acceleration_vectors) / 2)
-            child = Track(self.map)
-            child.acceleration_vectors = (male.acceleration_vectors[:half_male] +
+            child_acceleration_vectors = (male.acceleration_vectors[:half_male] +
                 female.acceleration_vectors[half_female:] )
-            for i, vector in enumerate(child.acceleration_vectors):
-                working = child.accelerate(vector)
-                if not working:
-                    child.acceleration_vectors = child.acceleration_vectors[:i]
+            child = Track(self.map)
+            for vector in child_acceleration_vectors:
+                if not child.accelerate(vector):
                     break
             children.append(child)
 
