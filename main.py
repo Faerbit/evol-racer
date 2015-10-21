@@ -8,7 +8,7 @@ from map import Map
 from population import Population
 from graphics import save_svg
 from shutil import rmtree
-from time import perf_counter
+from contexttimer import Timer
 from collections import deque
 
 class CircularBuffer(deque):
@@ -42,7 +42,7 @@ class Interface():
         if not ok:
             sys.stdout.write(msg)
         else:
-            string = ("\r" + msg + "{:>" + str(50 - len(msg))
+            string = ("\r" + msg + "{:>" + str(100 - len(msg))
                     + "s}\n").format("[\033[32mOK\033[0m]")
             sys.stdout.write(string)
         sys.stdout.flush()
@@ -53,9 +53,9 @@ class Interface():
         write_mean    = float(self.write_durations.average)
         string = ("\rCurrent timestep: {:>" + str(len(str(self.max_timesteps)) + 2) + "d} -- {:>3.5f} Gen/s --- {:>3.5f} s per file").format(timestep, timestep_mean, write_mean)
         if not writing:
-            sys.stdout.write("{:90s}".format(string))
+            sys.stdout.write("{:100s}".format(string))
         else:
-            sys.stdout.write("{:90s}".format(string + "\033[5m ... writing file ...\033[0m"))
+            sys.stdout.write("{:100s}".format(string + "\033[5m ... writing file ...\033[0m"))
         sys.stdout.flush()
 
     def filename(self, timestep):
@@ -110,19 +110,18 @@ class Interface():
                 mutate_chance=mutate_chance)
         self.init_msg("Generating population ...", ok=True)
         for i in range(self.max_timesteps + 1):
-            start = perf_counter()
-            write_duration = 0
-            # write plots regularly
-            if (write_plots and i % write_frequency == 0):
-                write_start = perf_counter()
-                self.status_msg(i, writing=True)
-                save_svg(self.filename(i), map, population.tracks, out_directory=out_directory)
-                write_duration = perf_counter() - write_start
-                self.write_durations.append(write_duration)
-            self.status_msg(i,writing=False)
-            population.evolve()
-            duration = perf_counter() - start - write_duration
-            self.timestep_durations.append(duration)
+            with Timer() as timer:
+                write_duration = 0
+                # write plots regularly
+                if (write_plots and i % write_frequency == 0):
+                    with Timer() as write_timer:
+                        self.status_msg(i, writing=True)
+                        save_svg(self.filename(i), map, population.tracks, out_directory=out_directory)
+                    write_duration = write_timer.elapsed
+                    self.write_durations.append(write_duration)
+                self.status_msg(i,writing=False)
+                population.evolve()
+            self.timestep_durations.append(timer.elapsed - write_duration)
 
         # write final plot
         if write_plots:
