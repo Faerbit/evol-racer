@@ -27,6 +27,7 @@ class Interface():
     def __init__(self):
         self.timestep_durations = CircularBuffer(10)
         self.write_durations = CircularBuffer(10)
+        self.grade = 0
 
     def __enter__(self):
         """Hides cursor."""
@@ -42,7 +43,7 @@ class Interface():
         if not ok:
             sys.stdout.write(msg)
         else:
-            string = ("\r" + msg + "{:>" + str(100 - len(msg))
+            string = ("\r" + msg + "{:>" + str(120 - len(msg))
                     + "s}\n").format("[\033[32mOK\033[0m]")
             sys.stdout.write(string)
         sys.stdout.flush()
@@ -52,11 +53,12 @@ class Interface():
         timestep_mean = float(self.timestep_durations.average)
         write_mean    = float(self.write_durations.average)
         string = ("\rCurrent timestep: {:>" + str(len(str(self.max_timesteps)) + 2) +
-                  "d} -- {:>3.5f}s per Gen. --- {:>3.5f}s per file").format(timestep, timestep_mean, write_mean)
+                  "d} -- Grade: {:>5.2f} -- {:>3.5f}s per Gen. "
+                  "-- {:>3.5f}s per file").format(timestep, self.grade, timestep_mean, write_mean)
         if not writing:
-            sys.stdout.write("{:100s}".format(string))
+            sys.stdout.write("{:120s}".format(string))
         else:
-            sys.stdout.write("{:100s}".format(string + "\033[5m ... writing file ...\033[0m"))
+            sys.stdout.write("{:120s}".format(string + "\033[5m ... writing file ...\033[0m"))
         sys.stdout.flush()
 
     def filename(self, timestep):
@@ -121,7 +123,7 @@ class Interface():
                     write_duration = write_timer.elapsed
                     self.write_durations.append(write_duration)
                 self.status_msg(i,writing=False)
-                population.evolve()
+                self.grade = population.evolve()
             self.timestep_durations.append(timer.elapsed - write_duration)
 
         # write final plot
