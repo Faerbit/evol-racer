@@ -46,13 +46,13 @@ def save_svg(filename, map, tracks=[], border=5, out_directory="out"):
         svg_track = svg.add(svg.g(id=id, stroke=color))
         for i in range(1, len(track.positions)):
             # ensure that the tracks end at the border
-            p_x = min(max_x + border, track.positions[i-1].x + border)
+            p_x = min(max_x + 2 * border, track.positions[i-1].x + border)
             p_x = max(p_x, 0)
-            p_y = min(max_y + border, track.positions[i-1].y + border)
+            p_y = min(max_y + 2 * border, track.positions[i-1].y + border)
             p_y = max(p_y, 0)
-            q_x = min(max_x + border, track.positions[i].x + border)
+            q_x = min(max_x + 2 * border, track.positions[i].x + border)
             q_x = max(q_x, 0)
-            q_y = min(max_y + border, track.positions[i].y + border)
+            q_y = min(max_y + 2 * border, track.positions[i].y + border)
             q_y = max(q_y, 0)
             svg_track.add(svg.line((p_x, p_y), (q_x, q_y)))
     svg.save()
