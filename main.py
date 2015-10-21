@@ -69,8 +69,12 @@ class Interface():
     def save(self, timestep, map, tracks):
         """Saves plot of current population."""
         self.status_msg(timestep, writing=True)
+        if self.grade != 0:
+            grade = self.grade
+        else:
+            grade = ""
         with Timer() as write_timer:
-            save_svg(self.filename(timestep), map, tracks, out_directory=self.out_directory)
+            save_svg(self.filename(timestep), map, tracks, grade, out_directory=self.out_directory)
         write_duration = write_timer.elapsed
         self.write_durations.append(write_duration)
         self.status_msg(timestep, writing=False)
