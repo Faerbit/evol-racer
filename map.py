@@ -42,7 +42,9 @@ class Map():
         """
         for line in open(filename):
             split_line = line.split()
-            if split_line[0].lower() == "w":
+            if line[0] == "#":
+                pass
+            elif split_line[0].lower() == "w":
                 p = Point(int(split_line[1]), int(split_line[2]))
                 q = Point(int(split_line[3]), int(split_line[4]))
                 self.add_line(p, q)
