@@ -17,14 +17,8 @@ def save_svg(filename, map, tracks=[], grade="", border=5, out_directory="out"):
     if not os.path.exists(out_directory):
         os.makedirs(out_directory)
     svg = svgwrite.Drawing(out_directory + "/" + filename)
-    # get dimensions of the map
-    max_x = 0
-    max_y = 0
-    for line in map.map:
-        max_x = max(max_x, max(line[0].x, line[1].x))
-        max_y = max(max_y, max(line[0].y, line[1].y))
     # background
-    svg.add(svg.rect((0,0), (max_x+2*border, max_y+2*border), fill="white"))
+    svg.add(svg.rect((0,0), (map.size_x+2*border, map.size_y+2*border), fill="white"))
     # paint walls
     walls = svg.add(svg.g(id="walls", stroke="red"))
     for line in map.map:
@@ -46,17 +40,17 @@ def save_svg(filename, map, tracks=[], grade="", border=5, out_directory="out"):
         svg_track = svg.add(svg.g(id=id, stroke=color))
         for i in range(1, len(track.positions)):
             # ensure that the tracks end at the border
-            p_x = min(max_x + 2 * border, track.positions[i-1].x + border)
+            p_x = min(map.size_x + 2 * border, track.positions[i-1].x + border)
             p_x = max(p_x, 0)
-            p_y = min(max_y + 2 * border, track.positions[i-1].y + border)
+            p_y = min(map.size_y + 2 * border, track.positions[i-1].y + border)
             p_y = max(p_y, 0)
-            q_x = min(max_x + 2 * border, track.positions[i].x + border)
+            q_x = min(map.size_x + 2 * border, track.positions[i].x + border)
             q_x = max(q_x, 0)
-            q_y = min(max_y + 2 * border, track.positions[i].y + border)
+            q_y = min(map.size_y + 2 * border, track.positions[i].y + border)
             q_y = max(q_y, 0)
             svg_track.add(svg.line((p_x, p_y), (q_x, q_y)))
     # print grade if supplied
     if grade:
         string = "Grade: {:3.2f}".format(grade)
-        svg.add(svg.text(string, insert=(0.5*max_x + border, 0.1*max_y + border), fill="black", style="font-size:8"))
+        svg.add(svg.text(string, insert=(0.5*map.size_x + border, 0.1*map.size_y + border), fill="black", style="font-size:8"))
     svg.save()

@@ -19,11 +19,13 @@ class Map():
         self.map = list()
         self.start = Point(0, 0)
         self.target = Point(0, 0)
+        self.size_x = 0
+        self.size_y = 0
         if filename:
             self.load(filename)
 
     def __repr__(self):
-        return str(self.map)
+        return "Dimensions: {}, {} Walls: {}".format(self.size_x, self.size_y, self.map)
 
     def add_line(self, p, q):
         """
@@ -45,6 +47,12 @@ class Map():
             if line[0] == "#":
                 pass
             elif split_line[0].lower() == "w":
+                # update dimensions
+                self.size_x = max(self.size_x, int(split_line[1]))
+                self.size_x = max(self.size_x, int(split_line[3]))
+                self.size_y = max(self.size_x, int(split_line[2]))
+                self.size_y = max(self.size_x, int(split_line[4]))
+
                 p = Point(int(split_line[1]), int(split_line[2]))
                 q = Point(int(split_line[3]), int(split_line[4]))
                 self.add_line(p, q)
