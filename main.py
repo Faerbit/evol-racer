@@ -60,9 +60,20 @@ class Interface():
             sys.stdout.write("{:120s}".format(string + "\033[5m ... writing file ...\033[0m"))
         sys.stdout.flush()
 
+
     def filename(self, timestep):
         """Picks the right filename for the SVG file"""
         return ("test_{:0" + str(len(str(self.max_timesteps))) + "d}.svg").format(timestep)
+
+
+    def save(self, timestep, map, tracks):
+        """Saves plot of current population."""
+        self.status_msg(timestep, writing=True)
+        with Timer() as write_timer:
+            save_svg(self.filename(timestep), map, tracks, out_directory=self.out_directory)
+        write_duration = write_timer.elapsed
+        self.write_durations.append(write_duration)
+        self.status_msg(timestep, writing=False)
 
     def run(self):
         """Runs the simulation."""
@@ -87,21 +98,21 @@ class Interface():
             self.max_timesteps = int(config["Map"]["max_timesteps"])
 
             write_plots = config["Plots"]["enabled"]
-            out_directory = config["Plots"]["out_directory"]
+            self.out_directory = config["Plots"]["out_directory"]
             write_frequency = int(config["Plots"]["frequency"])
             clean_previous = config["Plots"]["clean_previous"]
         else:
             raise Exception("Config file " + args.config_file + " not found. Exiting.")
 
         self.init_msg("Reading config ...", ok=True)
-        if clean_previous and os.path.exists(out_directory):
+        if clean_previous and os.path.exists(self.out_directory):
             self.init_msg("Cleaning previous plots ...", ok=False)
-            os.system("rm -rf " + out_directory + "/*")
+            os.system("rm -rf " + self.out_directory + "/*")
             self.init_msg("Cleaning previous plots ...", ok=True)
 
         map = Map(map_file_name)
         self.init_msg("Saving map ...", ok=False)
-        save_svg("map.svg", map, out_directory=out_directory)
+        save_svg("map.svg", map, out_directory=self.out_directory)
         self.init_msg("Saving map ...", ok=True)
         self.init_msg("Generating population ...", ok=False)
         population = Population(
@@ -114,25 +125,20 @@ class Interface():
                 random_select_chance=random_select_chance,
                 mutate_chance=mutate_chance)
         self.init_msg("Generating population ...", ok=True)
-        for i in range(self.max_timesteps + 1):
+        # write first plot
+        self.save(0, map, population.tracks)
+        for i in range(1, self.max_timesteps + 1):
+            self.status_msg(i, writing=False)
             with Timer() as timer:
-                write_duration = 0
-                # write plots regularly
-                if (write_plots and i % write_frequency == 0):
-                    with Timer() as write_timer:
-                        self.status_msg(i, writing=True)
-                        save_svg(self.filename(i), map, population.tracks, out_directory=out_directory)
-                    write_duration = write_timer.elapsed
-                    self.write_durations.append(write_duration)
-                self.status_msg(i,writing=False)
                 self.grade = population.evolve()
-            self.timestep_durations.append(timer.elapsed - write_duration)
+            # write plots regularly
+            if (write_plots and i % write_frequency == 0):
+                self.save(i, map, population.tracks)
+            self.timestep_durations.append(timer.elapsed)
 
         # write final plot
-        if write_plots:
-            self.status_msg(self.max_timesteps, writing=True)
-            save_svg(self.filename(self.max_timesteps), map, population.tracks, out_directory=out_directory)
-            self.status_msg(self.max_timesteps, writing=False)
+        if (write_plots and not (i % write_frequency == 0)):
+            self.save(i, map, population.tracks)
 
 if __name__ == "__main__":
     interface = Interface()
