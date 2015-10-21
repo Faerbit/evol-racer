@@ -15,13 +15,15 @@ class Population():
         track = Track(self.map)
         work = True
         while work:
-            # choose angle
-            angle = random() * 2 * pi
-            # choose length
-            length = random() * self.max_acceleration
-            x = int(round(sin(angle) * length))
-            y = int(round(cos(angle) * length))
-            acceleration_vector = Vector(x, y)
+            acceleration_vector = Vector(0, 0)
+            while acceleration_vector == Vector(0, 0):
+                # choose angle
+                angle = random() * 2 * pi
+                # choose length
+                length = random() * self.max_acceleration
+                x = int(round(sin(angle) * length))
+                y = int(round(cos(angle) * length))
+                acceleration_vector = Vector(x, y)
             work = track.accelerate(acceleration_vector)
         return track
 
