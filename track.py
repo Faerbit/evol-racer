@@ -26,23 +26,22 @@ class Track():
     def __repr__(self):
         return str(self.acceleration_vectors)
 
-    def vector_length(self, vector):
-        """Calculates the euclidean lenght of the vector."""
-        return sqrt(vector.x * vector.x + vector.y * vector.y)
+    def limit_vector(self, vector):
+        """Limits the vector if longer than max_acceleration."""
+        length = sqrt(vector.x * vector.x + vector.y * vector.y)
+        if length > self.map.max_acceleration:
+            vector_x = int(vector.x * 1/length *
+                           self.map.max_acceleration)
+            vector_y = int(vector.y * 1/length *
+                           self.map.max_acceleration)
+            return Vector(vector_x, vector_y)
+        else:
+            return vector
 
 
     def brake_vector(self):
         """Calulates a break vector."""
-        length = self.vector_length(self.velocity_vector)
-        if length > self.map.max_acceleration:
-            vector_x = int(- self.velocity_vector.x * 1/length *
-                           self.map.max_acceleration)
-            vector_y = int(- self.velocity_vector.y * 1/length *
-                           self.map.max_acceleration)
-        else:
-            vector_x = - self.velocity_vector.x
-            vector_y = - self.velocity_vector.y
-        return Vector(vector_x, vector_y)
+        return Vector(-self.velocity_vector.x, -self.velocity_vector.y)
 
 
     def distance(self):
@@ -65,6 +64,7 @@ class Track():
                possible/necessary
         _braking: internal parameter
         """
+        vector = self.limit_vector(vector)
         self.acceleration_vectors.append(vector)
         self.velocity_vector = Vector(self.velocity_vector.x + vector.x,
                                       self.velocity_vector.y + vector.y)
