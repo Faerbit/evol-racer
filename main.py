@@ -139,15 +139,21 @@ class Interface():
             self.status_msg(i, writing=False)
             with Timer() as timer:
                 self.grade = population.evolve()
+            self.timestep_durations.append(timer.elapsed)
             # write plots regularly
             self.grades.append((i, self.grade))
             if (write_plots and i % write_frequency == 0):
                 self.save(i, map, population.tracks)
-            self.timestep_durations.append(timer.elapsed)
+            # check if population changes
+            if (len(self.grades) > 50
+                and (sum(y for (x, y) in self.grades[-50:])/50) - self.grades[-1][1] < 1):
+                break
+
 
         # write final plot
         if (write_plots and not (i % write_frequency == 0)):
             self.save(i, map, population.tracks)
+        print("\n Population isn't changing anymore. Exiting ...")
 
         if plot_grades:
             with open(self.out_directory + "/grades", "w") as grade_file:
