@@ -145,15 +145,20 @@ class Interface():
             if (write_plots and i % write_frequency == 0):
                 self.save(i, map, population.tracks)
             # check if population changes
-            if (len(self.grades) > 50
-                and (sum(y for (x, y) in self.grades[-50:])/50) - self.grades[-1][1] < 1):
-                break
+            if len(self.grades) > 50:
+                mean = sum(y for (x,y) in self.grades[-50:])/50
+                not_changing = True
+                for _, grade in self.grades[-50:]:
+                    if grade - mean > 1:
+                        not_changing = False
+                if not_changing:
+                    break
 
 
         # write final plot
         if (write_plots and not (i % write_frequency == 0)):
             self.save(i, map, population.tracks)
-        print("\n Population isn't changing anymore. Exiting ...")
+        print("\nPopulation isn't changing anymore. Exiting ...")
 
         if plot_grades:
             with open(self.out_directory + "/grades", "w") as grade_file:
