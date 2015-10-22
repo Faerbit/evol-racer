@@ -30,7 +30,7 @@ class Population():
             vector = Vector(x, y)
         return vector
 
-    def __init__(self, map, population_size, max_acceleration, distance_factor,
+    def __init__(self, map, population_size, distance_factor,
                  collision_penalty, retain_percentage, random_select_chance,
                  mutate_chance):
         """
@@ -38,7 +38,6 @@ class Population():
 
         map: the map on which the tracks should take place
         population_size: the number of individuals in the population
-        max_acceleration: the maximum acceleration allowed on the map
         distance_factor: a weight for the fitness function
         collision_penalty: fitness function penalty for collisions
         retain_percentage: how much of the population
@@ -47,7 +46,6 @@ class Population():
         mutate_chance: chance for randomly mutating some individuals
         """
         self.map = map
-        self.max_acceleration = int(max_acceleration)
         self.distance_factor = float(distance_factor)
         self.collision_penalty = float(collision_penalty)
         self.retain_percentage = float(retain_percentage)
@@ -110,7 +108,7 @@ class Population():
                 # choose angle
                 angle = random() * 2 * pi
                 # choose length
-                length = random() * self.max_acceleration
+                length = random() * self.map.max_acceleration
                 x = int(round(sin(angle) * length))
                 y = int(round(cos(angle) * length))
                 acceleration_vector = Vector(x, y)
@@ -135,7 +133,7 @@ class Population():
             child = Track(self.map)
             work = False
             for vector in child_acceleration_vectors:
-                work = child.accelerate(vector)
+                work = child.accelerate(vector, random_braking=False)
                 if not work:
                     break
             if work:

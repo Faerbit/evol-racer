@@ -10,10 +10,11 @@ class Map():
     Representing a map which contains walls, a starting point and a target.
     """
 
-    def __init__(self, filename=""):
+    def __init__(self, max_acceleration, filename=""):
         """
         Creates a map.
 
+        max_acceleration: the maximum acceleration allowed on the map
         filename: if given loads the map directly
         """
         self.map = list()
@@ -21,6 +22,7 @@ class Map():
         self.target = Point(0, 0)
         self.size_x = 0
         self.size_y = 0
+        self.max_acceleration = int(max_acceleration)
         if filename:
             self.load(filename)
 

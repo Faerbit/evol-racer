@@ -2,6 +2,8 @@ from collections import namedtuple
 from map import Map, Point
 from intersect import do_intersect
 from graphics import save_svg
+from math import sqrt
+from random import random
 
 Vector = namedtuple("Vector", ["x", "y"])
 
@@ -24,15 +26,44 @@ class Track():
     def __repr__(self):
         return str(self.acceleration_vectors)
 
+    def vector_length(self, vector):
+        """Calculates the euclidean lenght of the vector."""
+        return sqrt(vector.x * vector.x + vector.y * vector.y)
 
-    def accelerate(self, vector, check=True, _last_run=False):
+
+    def brake_vector(self):
+        """Calulates a break vector."""
+        length = self.vector_length(self.velocity_vector)
+        if length > self.map.max_acceleration:
+            vector_x = int(- self.velocity_vector.x * 1/length *
+                           self.map.max_acceleration)
+            vector_y = int(- self.velocity_vector.y * 1/length *
+                           self.map.max_acceleration)
+        else:
+            vector_x = - self.velocity_vector.x
+            vector_y = - self.velocity_vector.y
+        return Vector(vector_x, vector_y)
+
+
+    def distance(self):
+        """
+        Calcualtes the euclidean distance
+        from the last position to the target.
+        """
+        dist_x = self.positions[-1].x - self.map.target.x
+        dist_y = self.positions[-1].y - self.map.target.y
+        return sqrt(dist_x * dist_x + dist_y * dist_y)
+
+
+
+    def accelerate(self, vector, check=True, random_braking=True, _braking=False):
         """
         Accelerate into the given direction.
 
         vector: acceleration vector
         check: if set the methods checks if further acceleration is
                possible/necessary
-        _last_run: internal parameter
+        _braking: internal parameter
         """
         self.acceleration_vectors.append(vector)
         self.velocity_vector = Vector(self.velocity_vector.x + vector.x,
@@ -41,12 +72,17 @@ class Track():
                              self.positions[-1].y + self.velocity_vector.y)
         self.positions.append(new_position)
         if check:
-            if _last_run:
-                return False
-            elif self.positions[-1] == self.map.target:
-                # accelerate(brake) one last time because the car must stop at the target
-                brake_vector = Vector(-vector.x, -vector.y)
-                self.accelerate(brake_vector, _last_run=True)
+            if _braking:
+                if self.velocity_vector == Vector(0, 0):
+                    return False
+                else:
+                    self.accelerate(self.brake_vector(), _braking=True)
+            # brake if near enough to the target
+            elif (self.distance() < self.map.max_acceleration * 2.5) and random_braking:
+                if ((-1/(self.map.max_acceleration * 2.5)) * self.distance() + 1) > random():
+                    self.accelerate(self.brake_vector(), _braking=True)
+                else:
+                    return True
             elif self.check_collisions(len(self.positions) - 1):
                 self.collision = True
                 return False

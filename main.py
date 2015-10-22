@@ -114,7 +114,7 @@ class Interface():
             os.system("rm -rf " + self.out_directory + "/*")
             self.init_msg("Cleaning previous plots ...", ok=True)
 
-        map = Map(map_file_name)
+        map = Map(max_acceleration, map_file_name)
         self.init_msg("Saving map ...", ok=False)
         save_svg("map.svg", map, out_directory=self.out_directory)
         self.init_msg("Saving map ...", ok=True)
@@ -122,7 +122,6 @@ class Interface():
         population = Population(
                 map=map,
                 population_size=population_size,
-                max_acceleration=max_acceleration,
                 distance_factor=distance_factor,
                 collision_penalty=collision_penalty,
                 retain_percentage=retain_percentage,
