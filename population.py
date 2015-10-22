@@ -1,4 +1,4 @@
-# Original code from http://lethain.com/genetic-algorithms-cool-name-damn-simple/
+# Based on code from http://lethain.com/genetic-algorithms-cool-name-damn-simple/
 
 from random import randint, random
 from operator import add
@@ -85,7 +85,6 @@ class Population():
         for fitness, _ in population:
             sum += fitness
         return sum/len(population)
-
 
 
     def evolve(self):
