@@ -118,7 +118,7 @@ class Interface():
             self.init_msg("Cleaning previous plots ...", ok=True)
 
         map = Map(max_acceleration, map_file_name)
-        if wirte_plots:
+        if write_plots:
             self.init_msg("Saving map ...", ok=False)
             save_svg("map.svg", map, out_directory=self.out_directory)
             self.init_msg("Saving map ...", ok=True)
