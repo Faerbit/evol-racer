@@ -158,6 +158,8 @@ class Interface():
             with open(self.out_directory + "/plot", "w") as plot_file:
                 plot_file.write("set term pdf\n")
                 plot_file.write("set out '" + self.out_directory + "/grades.pdf'\n")
+                plot_file.write("set xlabel 'Timestep'\n")
+                plot_file.write("set ylabel ' Grade'\n")
                 plot_file.write("p '" + self.out_directory + "/grades' u 1:2 w l title 'Grades'\n")
             os.system("gnuplot " + self.out_directory + "/plot")
 
