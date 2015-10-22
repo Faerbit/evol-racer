@@ -9,6 +9,7 @@ from population import Population
 from graphics import save_svg
 from contexttimer import Timer
 from collections import deque
+from ast import literal_eval
 
 class CircularBuffer(deque):
     def __init__(self, size=0):
@@ -102,11 +103,11 @@ class Interface():
             mutate_chance = config["Map"]["mutate_chance"]
             self.max_timesteps = int(config["Map"]["max_timesteps"])
 
-            write_plots = config["Plots"]["enabled"]
+            write_plots = literal_eval(config["Plots"]["enabled"])
             self.out_directory = config["Plots"]["out_directory"]
             write_frequency = int(config["Plots"]["frequency"])
-            clean_previous = config["Plots"]["clean_previous"]
-            plot_grades = config["Plots"]["plot_grades"]
+            clean_previous = literal_eval(config["Plots"]["clean_previous"])
+            plot_grades = literal_eval(config["Plots"]["plot_grades"])
         else:
             raise Exception("Config file " + args.config_file + " not found. Exiting.")
 
@@ -131,7 +132,8 @@ class Interface():
                 mutate_chance=mutate_chance)
         self.init_msg("Generating population ...", ok=True)
         # write first plot
-        self.save(0, map, population.tracks)
+        if write_plots:
+            self.save(0, map, population.tracks)
         for i in range(1, self.max_timesteps + 1):
             self.status_msg(i, writing=False)
             with Timer() as timer:
