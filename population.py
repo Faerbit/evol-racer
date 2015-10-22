@@ -24,9 +24,9 @@ class Population():
             # choose angle
             angle = random() * 2 * pi
             # choose length
-            length = random() * self.max_acceleration
-            x = int(round(sin(angle) * length))
-            y = int(round(cos(angle) * length))
+            length = random() * self.map.max_acceleration
+            x = int(sin(angle) * length)
+            y = int(cos(angle) * length)
             vector = Vector(x, y)
         return vector
 
