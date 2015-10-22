@@ -27,6 +27,7 @@ class Interface():
         self.timestep_durations = CircularBuffer(10)
         self.write_durations = CircularBuffer(10)
         self.grade = 0
+        self.grades = []
 
     def __enter__(self):
         """Hides cursor."""
@@ -105,6 +106,7 @@ class Interface():
             self.out_directory = config["Plots"]["out_directory"]
             write_frequency = int(config["Plots"]["frequency"])
             clean_previous = config["Plots"]["clean_previous"]
+            plot_grades = config["Plots"]["plot_grades"]
         else:
             raise Exception("Config file " + args.config_file + " not found. Exiting.")
 
@@ -135,6 +137,7 @@ class Interface():
             with Timer() as timer:
                 self.grade = population.evolve()
             # write plots regularly
+            self.grades.append((i, self.grade))
             if (write_plots and i % write_frequency == 0):
                 self.save(i, map, population.tracks)
             self.timestep_durations.append(timer.elapsed)
@@ -142,6 +145,18 @@ class Interface():
         # write final plot
         if (write_plots and not (i % write_frequency == 0)):
             self.save(i, map, population.tracks)
+
+        if plot_grades:
+            with open(self.out_directory + "/grades", "w") as grade_file:
+                for timestep, grade in self.grades:
+                    string = ("{:>" + str(len(str(self.max_timesteps)))
+                            + "} {:>4.5f}\n").format(timestep, grade)
+                    grade_file.write(string)
+            with open(self.out_directory + "/plot", "w") as plot_file:
+                plot_file.write("set term pdf\n")
+                plot_file.write("set out '" + self.out_directory + "/grades.pdf'\n")
+                plot_file.write("p '" + self.out_directory + "/grades' u 1:2 w l title 'Grades'\n")
+            os.system("gnuplot " + self.out_directory + "/plot")
 
 if __name__ == "__main__":
     interface = Interface()
