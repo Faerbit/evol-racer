@@ -5,6 +5,7 @@ from operator import add
 from functools import reduce
 from math import sin, cos, pi, sqrt
 from track import Track, Vector
+from map import Point
 from operator import itemgetter
 
 class Population():
@@ -101,17 +102,25 @@ class Population():
                 parents.append(individual)
 
         # mutate some individuals
-        for individual in parents:
+        for i, _ in enumerate(parents):
             if self.mutate_chance > random():
-                pos_to_mutate = randint(0, len(individual.acceleration_vectors) - 1)
-                # choose angle
-                angle = random() * 2 * pi
-                # choose length
-                length = random() * self.map.max_acceleration
-                x = int(round(sin(angle) * length))
-                y = int(round(cos(angle) * length))
-                acceleration_vector = Vector(x, y)
-                individual.acceleration_vectors[pos_to_mutate] = acceleration_vector
+                pos_to_mutate = randint(0, len(parents[i].positions) - 1)
+                mutated_positions = parents[i].positions
+                point_x = randint(0, self.map.size_x)
+                point_y = randint(0, self.map.size_y)
+                mutated_positions[pos_to_mutate] = Point(point_x, point_y)
+                mutated_individual = Track(self.map)
+                for position in mutated_positions:
+                    # calculate the acceleration vector to the next position
+                    accelerate_vector_x = (-mutated_individual.positions[-1].x
+                        - mutated_individual.velocity_vector.x + position.x)
+                    accelerate_vector_y = (-mutated_individual.positions[-1].y
+                        - mutated_individual.velocity_vector.y + position.y)
+                    if not mutated_individual.accelerate(
+                            Vector(accelerate_vector_x, accelerate_vector_y)):
+                        break
+                parents[i] = mutated_individual
+
 
         # crossover parents to create children
         parents_length = len(parents)
@@ -125,19 +134,20 @@ class Population():
                 female = randint(0, parents_length - 1)
             male = parents[male]
             female = parents[female]
-            half_male = int(len(male.acceleration_vectors) / 2)
-            half_female = int(len(female.acceleration_vectors) / 2)
-            child_acceleration_vectors = (male.acceleration_vectors[:half_male] +
-                female.acceleration_vectors[half_female:] )
+            half_male = int(len(male.positions) / 2)
+            half_female = int(len(female.positions) / 2)
+            child_positions = (male.positions[:half_male] +
+                female.positions[half_female:] )
             child = Track(self.map)
-            work = False
-            for vector in child_acceleration_vectors:
-                work = child.accelerate(vector, random_braking=False)
-                if not work:
+            for position in child_positions:
+                # calculate the acceleration vector to the next position
+                accelerate_vector_x = (-child.positions[-1].x
+                    - child.velocity_vector.x + position.x)
+                accelerate_vector_y = (-child.positions[-1].y
+                    - child.velocity_vector.y + position.y)
+                if not child.accelerate(
+                    Vector(accelerate_vector_x, accelerate_vector_y)):
                     break
-            if work:
-                while child.accelerate(self.random_vector()):
-                    pass
             children.append(child)
 
         parents.extend(children)
