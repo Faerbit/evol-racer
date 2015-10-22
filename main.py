@@ -159,6 +159,13 @@ class Interface():
         if (write_plots and not (i % write_frequency == 0)):
             self.save(i, map, population.tracks)
         print("\nPopulation isn't changing anymore. Exiting ...")
+        self.init_msg("Writing solution ...", ok=False)
+        with open(self.out_directory + "/solution", "w") as solution_file:
+            length = str(len(str(max_acceleration)) + 1)
+            for vector in population.tracks[0].acceleration_vectors:
+                solution_file.write(("({:>" + length + "d}, {:>" + length
+                                  + "d})\n").format(vector.x, vector.y))
+        self.init_msg("Writing solution ...", ok=True)
 
         if plot_grades:
             with open(self.out_directory + "/grades", "w") as grade_file:
