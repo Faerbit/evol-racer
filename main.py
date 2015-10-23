@@ -102,6 +102,7 @@ class Interface():
             random_select_chance = config["Map"]["random_select_chance"]
             mutate_chance = config["Map"]["mutate_chance"]
             self.max_timesteps = int(config["Map"]["max_timesteps"])
+            confidence_level = int(config["Map"]["confidence_level"])
 
             write_plots = literal_eval(config["Plots"]["enabled"])
             self.out_directory = config["Plots"]["out_directory"]
@@ -145,10 +146,11 @@ class Interface():
             if (write_plots and i % write_frequency == 0):
                 self.save(i, map, population.tracks)
             # check if population changes
-            if len(self.grades) > 50:
-                mean = sum(y for (x,y) in self.grades[-50:])/50
+            if len(self.grades) > confidence_level:
+                mean = (sum(y for (x,y) in self.grades[-confidence_level:])
+                        /confidence_level)
                 not_changing = True
-                for _, grade in self.grades[-50:]:
+                for _, grade in self.grades[-confidence_level:]:
                     if grade - mean > 1:
                         not_changing = False
                 if not_changing:
@@ -159,7 +161,10 @@ class Interface():
         if (write_plots and not (i % write_frequency == 0)):
             self.save(i, map, population.tracks)
         print("\nPopulation isn't changing anymore. Exiting ...")
+        # write solution plot
         self.init_msg("Writing solution ...", ok=False)
+        if write_plots:
+            save_svg("solution.svg", map, [population.tracks[0]], out_directory=self.out_directory)
         with open(self.out_directory + "/solution", "w") as solution_file:
             length = str(len(str(max_acceleration)) + 1)
             for vector in population.tracks[0].acceleration_vectors:
