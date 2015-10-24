@@ -55,13 +55,16 @@ class Track():
 
 
 
-    def accelerate(self, vector, check=True, random_braking=True, _braking=False):
+    def accelerate(self, vector, check=True, random_braking=True, generating=False, _braking=False):
         """
         Accelerate into the given direction.
 
         vector: acceleration vector
-        check: if set the methods checks if further acceleration is
-               possible/necessary
+        check: if set the function checks if further acceleration is
+            possible/necessary
+        random_braking: if set the function randomly breaks the nearer
+            the track gets to the target
+        generating: if set the function will reset the track if it collides
         _braking: internal parameter
         """
         vector = self.limit_vector(vector)
@@ -84,8 +87,12 @@ class Track():
                 else:
                     return True
             elif self.check_collisions(len(self.positions) - 1):
-                self.collision = True
-                return False
+                if generating:
+                    self.__init__(self.map)
+                    return True
+                else:
+                    self.collision = True
+                    return False
             else:
                 return True
 

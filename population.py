@@ -14,7 +14,7 @@ class Population():
     def individual(self):
         """"Creates a member of the population."""
         track = Track(self.map)
-        while track.accelerate(self.random_vector()):
+        while track.accelerate(self.random_vector(), generating=True):
             pass
         return track
 
