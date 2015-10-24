@@ -115,15 +115,7 @@ class Population():
                 point_y = randint(0, self.map.size_y)
                 mutated_positions[pos_to_mutate] = Point(point_x, point_y)
                 mutated_individual = Track(self.map)
-                for position in mutated_positions:
-                    # calculate the acceleration vector to the next position
-                    accelerate_vector_x = (-mutated_individual.positions[-1].x
-                        - mutated_individual.velocity_vector.x + position.x)
-                    accelerate_vector_y = (-mutated_individual.positions[-1].y
-                        - mutated_individual.velocity_vector.y + position.y)
-                    if not mutated_individual.accelerate(
-                            Vector(accelerate_vector_x, accelerate_vector_y)):
-                        break
+                mutated_individual.approximate_positions(mutated_positions)
                 parents[i] = mutated_individual
 
 
@@ -144,15 +136,7 @@ class Population():
             child_positions = (male.positions[:half_male] +
                 female.positions[half_female:] )
             child = Track(self.map)
-            for position in child_positions:
-                # calculate the acceleration vector to the next position
-                accelerate_vector_x = (-child.positions[-1].x
-                    - child.velocity_vector.x + position.x)
-                accelerate_vector_y = (-child.positions[-1].y
-                    - child.velocity_vector.y + position.y)
-                if not child.accelerate(
-                    Vector(accelerate_vector_x, accelerate_vector_y)):
-                    break
+            child.approximate_positions(child_positions)
             children.append(child)
 
         parents.extend(children)

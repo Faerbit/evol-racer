@@ -115,3 +115,18 @@ class Track():
         if verbose:
             print("No collision detected.")
         return False
+
+
+    def approximate_positions(self, positions):
+        """
+        Tries to accelerate in such a way to reach the given positions.
+        """
+        for position in positions:
+            # calculate the acceleration vector to the next position
+            accelerate_vector_x = (-self.positions[-1].x
+                - self.velocity_vector.x + position.x)
+            accelerate_vector_y = (-self.positions[-1].y
+                - self.velocity_vector.y + position.y)
+            if not self.accelerate(
+                Vector(accelerate_vector_x, accelerate_vector_y)):
+                break
