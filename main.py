@@ -39,10 +39,12 @@ class Interface():
         os.system("setterm -cursor on")
         sys.stdout.write("\n")
 
-    def init_msg(self, msg, ok):
+    def init_msg(self, msg, ok, progress=0):
         """Convenience function for init messages."""
+        dots_length = int((105 - len(msg)) * progress)
+        msg = msg + " {} ".format("." * dots_length)
         if not ok:
-            sys.stdout.write(msg)
+            sys.stdout.write("\r" + msg)
         else:
             string = ("\r" + msg + "{:>" + str(120 - len(msg))
                     + "s}\n").format("[\033[32mOK\033[0m]")
@@ -112,18 +114,18 @@ class Interface():
         else:
             raise Exception("Config file " + args.config_file + " not found. Exiting.")
 
-        self.init_msg("Reading config ...", ok=True)
+        self.init_msg("Reading config", progress=1, ok=True)
         if clean_previous and os.path.exists(self.out_directory):
             self.init_msg("Cleaning previous plots ...", ok=False)
             os.system("rm -rf " + self.out_directory + "/*")
-            self.init_msg("Cleaning previous plots ...", ok=True)
+            self.init_msg("Cleaning previous plots", progress=1, ok=True)
 
         map = Map(max_acceleration, map_file_name)
         if write_plots:
             self.init_msg("Saving map ...", ok=False)
             save_svg("map.svg", map, out_directory=self.out_directory)
-            self.init_msg("Saving map ...", ok=True)
-        self.init_msg("Generating population ...", ok=False)
+            self.init_msg("Saving map", progress=1, ok=True)
+        self.init_msg("Generating population ", progress=0, ok=False)
         population = Population(
                 map=map,
                 population_size=population_size,
@@ -132,7 +134,7 @@ class Interface():
                 retain_percentage=retain_percentage,
                 random_select_chance=random_select_chance,
                 mutate_chance=mutate_chance)
-        self.init_msg("Generating population ...", ok=True)
+        self.init_msg("Generating population", progress=1, ok=True)
         # write first plot
         if write_plots:
             self.save(0, map, population.tracks)
@@ -170,7 +172,7 @@ class Interface():
             for vector in population.tracks[0].acceleration_vectors:
                 solution_file.write(("({:>" + length + "d}, {:>" + length
                                   + "d})\n").format(vector.x, vector.y))
-        self.init_msg("Writing solution ...", ok=True)
+        self.init_msg("Writing solution", progress=1, ok=True)
 
         if plot_grades:
             with open(self.out_directory + "/grades", "w") as grade_file:

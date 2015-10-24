@@ -19,7 +19,7 @@ class Population():
         return track
 
     def random_vector(self):
-        """Returns a vector of random lenght and direction."""
+        """Returns a vector of random length and direction."""
         vector = Vector(0, 0)
         while vector == Vector(0, 0):
             # choose angle
@@ -53,7 +53,12 @@ class Population():
         self.random_select_chance = float(random_select_chance)
         self.mutate_chance = float(mutate_chance)
         self.tracks = []
-        for i in range(int(population_size)):
+        # defered import to avoid circular import
+        from main import Interface
+        interface = Interface()
+        population_size = int(population_size)
+        for i in range(population_size):
+            interface.init_msg("Generating population", progress=float(i/population_size), ok=False)
             self.tracks.append(self.individual())
 
 
