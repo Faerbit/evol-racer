@@ -1,9 +1,7 @@
 # Code adapted from http://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
-from collections import namedtuple
 import timeit
 from random import randint
-
-Point = namedtuple("Point", ["x", "y"])
+import numpy as np
 
 def on_segment(p, q, r):
     """
@@ -16,8 +14,8 @@ def on_segment(p, q, r):
 
     """
 
-    if (q.x <= max(p.x, r.x) and q.x >= min(p.x, r.x) and
-            q.y <= max(p.y, r.y) and q.y >= min(p.y, r.y)):
+    if (q[0] <= max(p[0], r[0]) and q[0] >= min(p[0], r[0]) and
+            q[1] <= max(p[1], r[1]) and q[1] >= min(p[1], r[1])):
         return True
     else:
         return False
@@ -38,8 +36,8 @@ def orientation(p, q, r):
     See 10th slides from following link for derivation of the formula
     http://www.dcs.gla.ac.uk/~pat/52233/slides/Geometry1x1.pdf
     """
-    value = ((q.y - p.y) * (r.x - q.x) -
-             (q.x - p.x) * (r.y - q.y))
+    value = ((q[1] - p[1]) * (r[0] - q[0]) -
+             (q[0] - p[0]) * (r[1] - q[1]))
 
     if value == 0:
         return 0

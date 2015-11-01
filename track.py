@@ -1,12 +1,8 @@
-from collections import namedtuple
-from map import Map, Point
+from map import Map
 from intersect import do_intersect
 from graphics import save_svg
-from math import sqrt
 from random import random
-
-Vector = namedtuple("Vector", ["x", "y"])
-
+import numpy as np
 
 class Track():
     """Represents a track a car could take across the map."""
@@ -18,8 +14,8 @@ class Track():
         map: the map on which the track should be
         """
         self.map = map
-        self.velocity_vector = Vector(0, 0)
-        self.acceleration_vectors = [Vector(0,0)]
+        self.velocity_vector = np.array([0,0])
+        self.acceleration_vectors = [np.array([0,0])]
         self.positions = [map.start]
         self.collision = False
 
@@ -28,13 +24,11 @@ class Track():
 
     def limit_vector(self, vector):
         """Limits the vector if longer than max_acceleration."""
-        length = sqrt(vector.x * vector.x + vector.y * vector.y)
+        length = np.linalg.norm(vector)
         if length > self.map.max_acceleration:
-            vector_x = int(vector.x * 1/length *
-                           self.map.max_acceleration)
-            vector_y = int(vector.y * 1/length *
-                           self.map.max_acceleration)
-            return Vector(vector_x, vector_y)
+            limited_vector = vector * (1/length) * self.map.max_acceleration
+            limited_vector = np.array([int(limited_vector[0]), int(limited_vector[1])])
+            return limited_vector
         else:
             return vector
 
@@ -46,55 +40,35 @@ class Track():
 
     def distance(self):
         """
-        Calcualtes the euclidean distance
+        Calculates the euclidean distance
         from the last position to the target.
         """
-        dist_x = self.positions[-1].x - self.map.target.x
-        dist_y = self.positions[-1].y - self.map.target.y
-        return sqrt(dist_x * dist_x + dist_y * dist_y)
+        vector = self.positions[-1] - self.map.start
+        return np.linalg.norm(vector)
 
 
 
-    def accelerate(self, vector, check=True, random_braking=True, generating=False, _braking=False):
+    def accelerate(self, vector):
         """
         Accelerate into the given direction.
 
         vector: acceleration vector
-        check: if set the function checks if further acceleration is
-            possible/necessary
-        random_braking: if set the function randomly breaks the nearer
-            the track gets to the target
-        generating: if set the function will reset the track if it collides
-        _braking: internal parameter
+
+        Returns True if acceleration was succesful and further acceleration
+        will be possible. Returns false otherwise.
         """
         vector = self.limit_vector(vector)
         self.acceleration_vectors.append(vector)
-        self.velocity_vector = Vector(self.velocity_vector.x + vector.x,
-                                      self.velocity_vector.y + vector.y)
-        new_position = Point(self.positions[-1].x + self.velocity_vector.x,
-                             self.positions[-1].y + self.velocity_vector.y)
+        self.velocity_vector += vector
+        new_position = self.positions[-1] + self.velocity_vector
         self.positions.append(new_position)
-        if check:
-            if _braking:
-                if self.velocity_vector == Vector(0, 0):
-                    return False
-                else:
-                    self.accelerate(self.brake_vector(), _braking=True)
-            # brake if near enough to the target
-            elif (self.distance() < self.map.max_acceleration * 2.5) and random_braking:
-                if ((-1/(self.map.max_acceleration * 2.5)) * self.distance() + 1) > random():
-                    self.accelerate(self.brake_vector(), _braking=True)
-                else:
-                    return True
-            elif self.check_collisions(len(self.positions) - 1):
-                if generating:
-                    self.__init__(self.map)
-                    return True
-                else:
-                    self.collision = True
-                    return False
-            else:
-                return True
+        if self.check_collisions(len(self.positions) - 1):
+            self.collision = True
+            return False
+        elif self.distance() == 0 and self.velocity_vector == np.array([0, 0]):
+            return False
+        else:
+            return True
 
 
     def check_collisions(self, from_position_index=1, verbose=False):
@@ -115,18 +89,3 @@ class Track():
         if verbose:
             print("No collision detected.")
         return False
-
-
-    def approximate_positions(self, positions):
-        """
-        Tries to accelerate in such a way to reach the given positions.
-        """
-        for position in positions:
-            # calculate the acceleration vector to the next position
-            accelerate_vector_x = (-self.positions[-1].x
-                - self.velocity_vector.x + position.x)
-            accelerate_vector_y = (-self.positions[-1].y
-                - self.velocity_vector.y + position.y)
-            if not self.accelerate(
-                Vector(accelerate_vector_x, accelerate_vector_y)):
-                break

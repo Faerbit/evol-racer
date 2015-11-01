@@ -1,9 +1,4 @@
-from functools import reduce
-from collections import namedtuple
-from itertools import chain
-from graphics import save_svg
-
-Point = namedtuple("Point", ["x", "y"])
+import numpy as np
 
 class Map():
     """
@@ -18,16 +13,15 @@ class Map():
         filename: if given loads the map directly
         """
         self.map = list()
-        self.start = Point(0, 0)
-        self.target = Point(0, 0)
-        self.size_x = 0
-        self.size_y = 0
+        self.start = np.array([0, 0])
+        self.target = np.array([0, 0])
+        self.size = np.array([0, 0])
         self.max_acceleration = int(max_acceleration)
         if filename:
             self.load(filename)
 
     def __repr__(self):
-        return "Dimensions: {}, {} Walls: {}".format(self.size_x, self.size_y, self.map)
+        return "Dimensions: {}, {} Walls: {}".format(self.size[0], self.size[1], self.map)
 
     def add_line(self, p, q):
         """
@@ -46,21 +40,21 @@ class Map():
         """
         for line in open(filename):
             split_line = line.split()
-            if line[0] == "#":
+            if line == "" or line[0] == "#":
                 pass
             elif split_line[0].lower() == "w":
                 # update dimensions
-                self.size_x = max(self.size_x, int(split_line[1]))
-                self.size_x = max(self.size_x, int(split_line[3]))
-                self.size_y = max(self.size_x, int(split_line[2]))
-                self.size_y = max(self.size_x, int(split_line[4]))
+                self.size[0] = max(self.size[0], int(split_line[1]))
+                self.size[0] = max(self.size[0], int(split_line[3]))
+                self.size[1] = max(self.size[1], int(split_line[2]))
+                self.size[1] = max(self.size[1], int(split_line[4]))
 
-                p = Point(int(split_line[1]), int(split_line[2]))
-                q = Point(int(split_line[3]), int(split_line[4]))
+                p = np.array([int(split_line[1]), int(split_line[2])])
+                q = np.array([int(split_line[3]), int(split_line[4])])
                 self.add_line(p, q)
             elif split_line[0].lower() == "s":
-                    self.start = Point(int(split_line[1]), int(split_line[2]))
+                    self.start = np.array([int(split_line[1]), int(split_line[2])])
             elif split_line[0].lower() == "t":
-                    self.target = Point(int(split_line[1]), int(split_line[2]))
+                    self.target = np.array([int(split_line[1]), int(split_line[2])])
             else:
                 raise Exception("Unsupported character at the beginning of line: " + line)
