@@ -32,18 +32,12 @@ class Track():
         else:
             return vector
 
-
-    def brake_vector(self):
-        """Calulates a break vector."""
-        return Vector(-self.velocity_vector.x, -self.velocity_vector.y)
-
-
     def distance(self):
         """
         Calculates the euclidean distance
         from the last position to the target.
         """
-        vector = self.positions[-1] - self.map.start
+        vector = self.positions[-1] - self.map.target
         return np.linalg.norm(vector)
 
 
@@ -65,7 +59,7 @@ class Track():
         if self.check_collisions(len(self.positions) - 1):
             self.collision = True
             return False
-        elif self.distance() == 0 and self.velocity_vector == np.array([0, 0]):
+        elif self.distance() == 0 and np.array_equal(self.velocity_vector, np.array([0, 0])):
             return False
         else:
             return True
@@ -78,6 +72,8 @@ class Track():
         from_position_index: check only position from this index
         verbose: verbosity flag
         """
+        if from_position_index >= len(self.positions):
+            raise Exception("from_position_index: Index out of range")
         for i in range(from_position_index, len(self.positions)):
             for wall in self.map.map:
                 if do_intersect((self.positions[i-1], self.positions[i]),

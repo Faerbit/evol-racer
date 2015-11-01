@@ -3,13 +3,13 @@ from track import Track
 from map import Map
 import numpy as np
 from numpy.testing import assert_array_almost_equal as assertArrayEqual
+from numpy.testing import assert_almost_equal as assertAlmostEqual
 from tests.mocks import mock_open
 
 map_data = ("w 0 0 0 100\n"
             "w 0 100 100 100\n"
             "w 100 100 100 0\n"
             "w 100 0 0 0\n"
-            "w 50 20 50 70\n"
             "s 20 30\n"
             "t 80 30\n")
 
@@ -47,16 +47,90 @@ class TestTrack(TestCase):
         assertArrayEqual(self.track.limit_vector(vector), vector)
 
     def test_accelerate_1(self):
-        vector = np.array([2,3])
-        self.track.accelerate(vector)
-        assertArrayEqual(self.track.positions[-1], vector)
+        accel_vector = np.array([2,3])
+        self.track.accelerate(accel_vector)
+        new_pos = np.array([22, 33])
+        assertArrayEqual(self.track.positions[-1], new_pos)
+
+    def test_accelerate_2(self):
+        accel_vector = np.array([2,3])
+        self.track.accelerate(accel_vector)
+        accel_vector = np.array([3,2])
+        self.track.accelerate(accel_vector)
+        new_pos = np.array([27, 38])
+        assertArrayEqual(self.track.positions[-1], new_pos)
+
+    def test_accelerate_2(self):
+        accel_vector = np.array([2,3])
+        self.track.accelerate(accel_vector)
+        accel_vector = np.array([3,2])
+        self.track.accelerate(accel_vector)
+        accel_vector = np.array([-5,-5])
+        self.track.accelerate(accel_vector)
+        new_pos = np.array([27, 38])
+        assertArrayEqual(self.track.positions[-1], new_pos)
+
+    def test_accelerate_acceleration_vectors(self):
+        new_accel_vector = np.array([2,3])
+        self.track.accelerate(new_accel_vector)
+        old_accel_vector = np.array([0, 0])
+        assertArrayEqual(self.track.acceleration_vectors, [old_accel_vector, new_accel_vector])
 
     def test_accelerate_returns_true_if_succesful(self):
         vector = np.array([2,3])
-        self.assertEqual(self.track.accelerate(vector), True)
+        self.assertTrue(self.track.accelerate(vector))
 
     def test_distance(self):
         self.assertEqual(self.track.distance(), 60)
 
-    def test_check_collisons(self):
-        self.assertTrue(False)
+    def test_distance_after_accel(self):
+        accel_vector = np.array([2,3])
+        self.track.accelerate(accel_vector)
+        assertAlmostEqual(self.track.distance(), 58.0775343829)
+
+    def test_collided(self):
+        accel_vector = np.array([-10, 0])
+        self.track.accelerate(accel_vector)
+        self.track.accelerate(accel_vector)
+        self.assertTrue(self.track.collision)
+
+    def test_accelerate_returns_false_if_not_succesful(self):
+        accel_vector = np.array([-10, 0])
+        self.track.accelerate(accel_vector)
+        self.assertFalse(self.track.accelerate(accel_vector))
+
+    def test_accelerate_returns_false_if_at_target(self):
+        accel_vector = np.array([10, 0])
+        self.track.accelerate(accel_vector)
+        accel_vector = np.array([0, 0])
+        for i in range(5):
+            self.track.accelerate(-accel_vector)
+        accel_vector = np.array([-10, 0])
+        self.assertFalse(self.track.accelerate(accel_vector))
+
+    def test_check_collisions(self):
+        accel_vector = np.array([-10, 0])
+        self.track.accelerate(accel_vector)
+        accel_vector = np.array([  0, 0])
+        self.track.accelerate(accel_vector)
+        self.assertTrue(self.track.check_collisions())
+
+    def test_check_collisions_index_viable(self):
+        with self.assertRaises(Exception):
+            self.track.check_collisions(2)
+
+    def test_check_collisions_index_viable(self):
+        with self.assertRaises(Exception):
+            self.track.check_collisions(1)
+
+    def test_check_collisions_with_index(self):
+        accel_vector = np.array([-10, 0])
+        self.track.accelerate(accel_vector)
+        accel_vector = np.array([  0, 0])
+        self.track.accelerate(accel_vector)
+        accel_vector = np.array([ 10, 0])
+        self.track.accelerate(accel_vector)
+        self.track.accelerate(accel_vector)
+        accel_vector = np.array([  0, 0])
+        self.track.accelerate(accel_vector)
+        self.assertFalse(self.track.check_collisions(5))
