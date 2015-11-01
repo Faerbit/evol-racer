@@ -7,13 +7,14 @@ import numpy as np
 class Track():
     """Represents a track a car could take across the map."""
 
-    def __init__(self, map):
+    def __init__(self, map, limit_to_ints=True):
         """
         Creates a track.
 
         map: the map on which the track should be
         """
         self.map = map
+        self.limit_to_ints = limit_to_ints
         self.velocity_vector = np.array([0,0])
         self.acceleration_vectors = [np.array([0,0])]
         self.positions = [map.start]
@@ -27,7 +28,8 @@ class Track():
         length = np.linalg.norm(vector)
         if length > self.map.max_acceleration:
             limited_vector = vector * (1/length) * self.map.max_acceleration
-            limited_vector = np.array([int(limited_vector[0]), int(limited_vector[1])])
+            if self.limit_to_ints:
+                limited_vector = np.array([int(limited_vector[0]), int(limited_vector[1])])
             return limited_vector
         else:
             return vector

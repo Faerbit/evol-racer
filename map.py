@@ -16,7 +16,7 @@ class Map():
         self.start = np.array([0, 0])
         self.target = np.array([0, 0])
         self.size = np.array([0, 0])
-        self.max_acceleration = int(max_acceleration)
+        self.max_acceleration = float(max_acceleration)
         if filename:
             self.load(filename)
 
@@ -46,17 +46,17 @@ class Map():
                     pass
                 elif split_line[0].lower() == "w":
                     # update dimensions
-                    self.size[0] = max(self.size[0], int(split_line[1]))
-                    self.size[0] = max(self.size[0], int(split_line[3]))
-                    self.size[1] = max(self.size[1], int(split_line[2]))
-                    self.size[1] = max(self.size[1], int(split_line[4]))
+                    self.size[0] = max(self.size[0], float(split_line[1]))
+                    self.size[0] = max(self.size[0], float(split_line[3]))
+                    self.size[1] = max(self.size[1], float(split_line[2]))
+                    self.size[1] = max(self.size[1], float(split_line[4]))
 
-                    p = np.array([int(split_line[1]), int(split_line[2])])
-                    q = np.array([int(split_line[3]), int(split_line[4])])
+                    p = np.array([float(split_line[1]), float(split_line[2])])
+                    q = np.array([float(split_line[3]), float(split_line[4])])
                     self.add_line(p, q)
                 elif split_line[0].lower() == "s":
-                        self.start = np.array([int(split_line[1]), int(split_line[2])])
+                        self.start = np.array([float(split_line[1]), float(split_line[2])])
                 elif split_line[0].lower() == "t":
-                        self.target = np.array([int(split_line[1]), int(split_line[2])])
+                        self.target = np.array([float(split_line[1]), float(split_line[2])])
                 else:
                     raise Exception("Unsupported character at the beginning of line: " + line)

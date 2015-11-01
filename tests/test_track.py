@@ -37,9 +37,15 @@ class TestTrack(TestCase):
     def test_starts_not_colliding(self):
         self.assertEqual(self.track.collision, False)
 
-    def test_limit_vector_limits_vector(self):
+    def test_limit_vector_limits_vector_int(self):
         unlimited_vector = np.array([10, 3])
         limited_vector = np.array([9, 2])
+        assertArrayEqual(self.track.limit_vector(unlimited_vector), limited_vector)
+
+    def test_limit_vector_limits_vector_float(self):
+        self.track = Track(self.map, False)
+        unlimited_vector = np.array([10, 3])
+        limited_vector = np.array([9.57826285, 2.87347885])
         assertArrayEqual(self.track.limit_vector(unlimited_vector), limited_vector)
 
     def test_limit_vector_does_not_limit_short_enough_vectors(self):
