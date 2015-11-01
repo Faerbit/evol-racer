@@ -40,21 +40,23 @@ class Map():
         """
         for line in open(filename):
             split_line = line.split()
-            if line == "" or line[0] == "#":
-                pass
-            elif split_line[0].lower() == "w":
-                # update dimensions
-                self.size[0] = max(self.size[0], int(split_line[1]))
-                self.size[0] = max(self.size[0], int(split_line[3]))
-                self.size[1] = max(self.size[1], int(split_line[2]))
-                self.size[1] = max(self.size[1], int(split_line[4]))
+            # if line contains any data
+            if split_line:
+                if line[0] == "#":
+                    pass
+                elif split_line[0].lower() == "w":
+                    # update dimensions
+                    self.size[0] = max(self.size[0], int(split_line[1]))
+                    self.size[0] = max(self.size[0], int(split_line[3]))
+                    self.size[1] = max(self.size[1], int(split_line[2]))
+                    self.size[1] = max(self.size[1], int(split_line[4]))
 
-                p = np.array([int(split_line[1]), int(split_line[2])])
-                q = np.array([int(split_line[3]), int(split_line[4])])
-                self.add_line(p, q)
-            elif split_line[0].lower() == "s":
-                    self.start = np.array([int(split_line[1]), int(split_line[2])])
-            elif split_line[0].lower() == "t":
-                    self.target = np.array([int(split_line[1]), int(split_line[2])])
-            else:
-                raise Exception("Unsupported character at the beginning of line: " + line)
+                    p = np.array([int(split_line[1]), int(split_line[2])])
+                    q = np.array([int(split_line[3]), int(split_line[4])])
+                    self.add_line(p, q)
+                elif split_line[0].lower() == "s":
+                        self.start = np.array([int(split_line[1]), int(split_line[2])])
+                elif split_line[0].lower() == "t":
+                        self.target = np.array([int(split_line[1]), int(split_line[2])])
+                else:
+                    raise Exception("Unsupported character at the beginning of line: " + line)
