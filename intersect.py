@@ -113,13 +113,13 @@ def setup_benchmark():
     # Generate points
     min = 0
     max = 100
-    n = 10000
+    n = 100000
     benchmark_points = list()
     for i in range(n):
-        p1 = Point(randint(min, max), randint(min, max))
-        p2 = Point(randint(min, max), randint(min, max))
-        q1 = Point(randint(min, max), randint(min, max))
-        q2 = Point(randint(min, max), randint(min, max))
+        p1 = np.array([randint(min, max), randint(min, max)])
+        p2 = np.array([randint(min, max), randint(min, max)])
+        q1 = np.array([randint(min, max), randint(min, max)])
+        q2 = np.array([randint(min, max), randint(min, max)])
         benchmark_points.append((p1, p2, q1, q2))
 
 def benchmark():
