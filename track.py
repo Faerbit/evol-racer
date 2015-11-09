@@ -1,5 +1,5 @@
 from map import Map
-from intersect import do_intersect
+from intersect import do_intersect, intersect_point
 from graphics import save_svg
 from random import random
 import numpy as np
@@ -87,3 +87,24 @@ class Track():
         if verbose:
             print("No collision detected.")
         return False
+
+    def check_distance_to_wall(self, direction):
+        """
+        Returns the distance to the wall in the given direction.
+        direction: vector in the given direciton,
+            must be at least of unit length
+        """
+        if np.linalg.norm(direction) < 1:
+            raise Exception("Direction vector must be at least of unit length")
+        # is long enough in any case
+        direction = (self.positions[-1],
+                self.positions[-1] + (self.map.size[0] + self.map.size[1]) * direction)
+
+        # is large enough in any case
+        distance = self.map.size[0] + self.map.size[1]
+        for wall in self.map.map:
+            if do_intersect(direction, wall):
+                point = intersect_point(direction, wall)
+                new_distance = np.linalg.norm(self.positions[-1] - point)
+                distance = min(distance, new_distance)
+        return distance

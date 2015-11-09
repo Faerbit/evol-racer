@@ -140,3 +140,27 @@ class TestTrack(TestCase):
         accel_vector = np.array([  0, 0])
         self.track.accelerate(accel_vector)
         self.assertFalse(self.track.check_collisions(5))
+
+    def test_distance_to_wall_1(self):
+        self.assertEqual(self.track.check_distance_to_wall(np.array([-1,  0])), 20)
+
+    def test_distance_to_wall_2(self):
+        self.assertEqual(self.track.check_distance_to_wall(np.array([ 1,  0])), 80)
+
+    def test_distance_to_wall_3(self):
+        self.assertEqual(self.track.check_distance_to_wall(np.array([ 0,  1])), 70)
+
+    def test_distance_to_wall_4(self):
+        self.assertEqual(self.track.check_distance_to_wall(np.array([ 0, -1])), 30)
+
+    def test_distance_to_wall_5(self):
+        self.track.accelerate(np.array([10, 0]))
+        self.assertEqual(self.track.check_distance_to_wall(np.array([-1,  0])), 30)
+
+    def test_distance_to_wall_6(self):
+        self.assertAlmostEqual(self.track.check_distance_to_wall(
+            np.array([ 0.71,  0.71])), 98.994949366)
+
+    def test_distance_to_wall_too_short_direction_vector(self):
+        with self.assertRaises(Exception):
+            self.track.check_distance_to_wall(np.array([0.1, 0.1]))
