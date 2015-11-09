@@ -1,6 +1,7 @@
 from unittest import TestCase
-from intersect import do_intersect, on_segment, orientation
+from intersect import do_intersect, on_segment, orientation, intersect_point
 import numpy as np
+from numpy.testing import assert_array_almost_equal as assertArrayEqual
 
 class TestIntersect(TestCase):
 
@@ -78,3 +79,48 @@ class TestIntersect(TestCase):
         p2 = np.array([1, 3])
         p3 = np.array([2, 3])
         self.assertEqual(orientation(p1, p2, p3), 1)
+
+    def test_intersect_point_1(self):
+        p1 = np.array([0, 0])
+        p2 = np.array([1, 1])
+        q1 = np.array([1, 0])
+        q2 = np.array([0, 1])
+        p = (p1, p2)
+        q = (q1, q2)
+        assertArrayEqual(intersect_point(p, q), np.array([0.5, 0.5]))
+
+    def test_intersect_point_2(self):
+        p1 = np.array([0, 0])
+        p2 = np.array([2, 2])
+        q1 = np.array([2, 0])
+        q2 = np.array([0, 2])
+        p = (p1, p2)
+        q = (q1, q2)
+        assertArrayEqual(intersect_point(p, q), np.array([1, 1]))
+
+    def test_intersect_point_3(self):
+        p1 = np.array([ 0,  0])
+        p2 = np.array([ 0,  2])
+        q1 = np.array([-1,  1])
+        q2 = np.array([ 1,  1])
+        p = (p1, p2)
+        q = (q1, q2)
+        assertArrayEqual(intersect_point(p, q), np.array([0, 1]))
+
+    def test_intersect_point_4(self):
+        p1 = np.array([ 0,  0])
+        p2 = np.array([ 2,  0])
+        q1 = np.array([ 1,  1])
+        q2 = np.array([ 1, -1])
+        p = (p1, p2)
+        q = (q1, q2)
+        assertArrayEqual(intersect_point(p, q), np.array([1, 0]))
+
+    def test_intersect_point_5(self):
+        p1 = np.array([ 0,  0])
+        p2 = np.array([ 0,  2])
+        q1 = np.array([-1, -1])
+        q2 = np.array([ 1,  1])
+        p = (p1, p2)
+        q = (q1, q2)
+        assertArrayEqual(intersect_point(p, q), np.array([0, 0]))

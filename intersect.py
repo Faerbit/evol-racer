@@ -106,6 +106,20 @@ def do_intersect(p, q, verbose=False):
             print("Doesn't intersect")
         return False
 
+def intersect_point(p, q):
+    """
+    Returns the intersection point between line segment p and q
+    Formula taken from
+    https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line
+    """
+    a = p[0][0] * p[1][1] - p[0][1] * p[1][0]
+    b = q[0][0] * q[1][1] - q[0][1] * q[1][0]
+    c = ((p[0][0] - p[1][0]) * (q[0][1] - q[1][1])
+        - (p[0][1] - p[1][1]) * (q[0][0] - q[1][0]))
+    x_coord = (a * (q[0][0] - q[1][0]) - ((p[0][0] - p[1][0]) * b))/c
+    y_coord = (a * (q[0][1] - q[1][1]) - ((p[0][1] - p[1][1]) * b))/c
+    return np.array([x_coord, y_coord])
+
 
 def setup_benchmark():
     """Generates random points for benchmark purposes."""
