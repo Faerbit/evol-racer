@@ -34,6 +34,7 @@ class Track():
         else:
             return vector
 
+    @property
     def distance(self):
         """
         Calculates the euclidean distance
@@ -42,6 +43,9 @@ class Track():
         vector = self.positions[-1] - self.map.target
         return np.linalg.norm(vector)
 
+    @property
+    def length(self):
+        return len(self.positions)
 
 
     def accelerate(self, vector):
@@ -61,7 +65,7 @@ class Track():
         if self.check_collisions(len(self.positions) - 1):
             self.collision = True
             return False
-        elif self.distance() == 0 and np.array_equal(self.velocity_vector, np.array([0, 0])):
+        elif self.distance == 0 and np.array_equal(self.velocity_vector, np.array([0, 0])):
             return False
         else:
             return True
