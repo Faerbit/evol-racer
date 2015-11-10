@@ -1,8 +1,9 @@
 import numpy as np
 from random import uniform
 from random import randint
+from copy import deepcopy
 
-class Indivdual():
+class Individual():
     """Represents a neural net belonging to a track."""
 
     def __init__(self, track, min, max, middle_nodes=8):
@@ -82,3 +83,14 @@ class Indivdual():
         y = randint(0, cols - 1)
         self.output_matrix[x, y] = uniform(self.min, self.max)
         self.complete_matrix = self.input_matrix * self.output_matrix
+
+    def birth(self, mother):
+        """
+        Returns a new individual which has half of this instance
+        and half of the mother instance.
+        """
+        child = deepcopy(self)
+        child.input_matrix = 0.5 * self.input_matrix + 0.5 * mother.input_matrix
+        child.output_matrix = 0.5 * self.output_matrix + 0.5 * mother.output_matrix
+        child.complete_matrix = child.input_matrix * child.output_matrix
+        return child

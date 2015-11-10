@@ -3,6 +3,9 @@ from unittest.mock import patch
 import numpy as np
 from numpy.testing import assert_array_almost_equal as assertArrayEqual
 from tests.mocks import mock_open
+from individual import Individual
+from track import Track
+from map import Map
 
 map_data = ("w 0 0 0 100\n"
             "w 0 100 100 100\n"
@@ -15,15 +18,12 @@ class IndividualTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from map import Map
         with mock_open(map_data):
             cls.map = Map(10, "map")
 
     def setUp(self):
-        from track import Track
         self.track = Track(self.map)
-        from individual import Indivdual
-        self.individual = Indivdual(self.track, min=0, max=10, middle_nodes=7)
+        self.individual = Individual(self.track, min=0, max=10, middle_nodes=7)
 
     def test_init_track(self):
         self.assertEqual(self.individual.track, self.track)
@@ -143,3 +143,29 @@ class IndividualTests(TestCase):
         assertArrayEqual(self.individual.complete_matrix,
                 self.individual.input_matrix * self.individual.output_matrix)
 
+
+    def test_birth_input(self):
+        mother = Individual(self.track, 0, 10, 7)
+        child = self.individual.birth(mother)
+        matrix = 0.5 * mother.input_matrix + 0.5 * self.individual.input_matrix
+        assertArrayEqual(matrix, child.input_matrix)
+
+    def test_birth_output(self):
+        mother = Individual(self.track, 0, 10, 7)
+        child = self.individual.birth(mother)
+        matrix = 0.5 * mother.output_matrix + 0.5 * self.individual.output_matrix
+        assertArrayEqual(matrix, child.output_matrix)
+
+    def test_birth_complete(self):
+        mother = Individual(self.track, 0, 10, 7)
+        child = self.individual.birth(mother)
+        matrix = child.input_matrix * child.output_matrix
+        assertArrayEqual(matrix, child.complete_matrix)
+
+    def test_birth_copies(self):
+        input_matrix = np.matrix(self.individual.input_matrix)
+        output_matrix = np.matrix(self.individual.output_matrix)
+        mother = Individual(self.track, 0, 10, 7)
+        child = self.individual.birth(mother)
+        assertArrayEqual(input_matrix, self.individual.input_matrix)
+        assertArrayEqual(output_matrix, self.individual.output_matrix)
