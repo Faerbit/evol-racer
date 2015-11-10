@@ -29,7 +29,7 @@ class Track():
         if length > self.map.max_acceleration:
             limited_vector = vector * (1/length) * self.map.max_acceleration
             if self.limit_to_ints:
-                limited_vector = np.array([int(limited_vector[0]), int(limited_vector[1])])
+                limited_vector = np.array([int(limited_vector.item(0)), int(limited_vector.item(1))])
             return limited_vector
         else:
             return vector
