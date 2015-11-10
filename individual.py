@@ -2,6 +2,7 @@ import numpy as np
 from random import uniform as random
 
 class Indivdual():
+    """Represents a neural net belonging to a track."""
 
     def __init__(self, track, min, max, middle_nodes=8):
         self.track = track
