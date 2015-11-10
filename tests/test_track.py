@@ -176,3 +176,14 @@ class TestTrack(TestCase):
         self.track.accelerate(np.array([0, 1]))
         self.track.accelerate(np.array([0, 1]))
         self.assertEqual(self.track.length, 3)
+
+    def test_target_vector_1(self):
+        assertArrayEqual(self.track.target_vector, np.array([60, 0]))
+
+    def test_target_vector_2(self):
+        self.track.accelerate(np.array([0, 1]))
+        assertArrayEqual(self.track.target_vector, np.array([60, -1]))
+
+    def test_target_vector_3(self):
+        self.track.accelerate(np.array([-5, 5]))
+        assertArrayEqual(self.track.target_vector, np.array([65, -5]))

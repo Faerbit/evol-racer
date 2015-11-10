@@ -45,7 +45,17 @@ class Track():
 
     @property
     def length(self):
+        """
+        Returns the length of the track(#accelerations)
+        """
         return len(self.positions)
+
+    @property
+    def target_vector(self):
+        """
+        Returns a vector pointing to the target
+        """
+        return self.map.target - self.positions[-1]
 
 
     def accelerate(self, vector):
