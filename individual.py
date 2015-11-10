@@ -1,5 +1,6 @@
 import numpy as np
-from random import uniform as random
+from random import uniform
+from random import randint
 
 class Indivdual():
     """Represents a neural net belonging to a track."""
@@ -9,8 +10,8 @@ class Indivdual():
         self.middle_nodes = middle_nodes
         self.min = min
         self.max = max
-        self.input_matrix = self.generate_random_matrix(8, 8, min, max)
-        self.output_matrix = self.generate_random_matrix(8, 2, min, max)
+        self.input_matrix = self.generate_random_matrix(8, middle_nodes, min, max)
+        self.output_matrix = self.generate_random_matrix(middle_nodes, 2, min, max)
         self.complete_matrix = self.input_matrix * self.output_matrix
 
     def generate_random_matrix(self, rows, columns, min, max):
@@ -25,7 +26,7 @@ class Indivdual():
         string = ""
         for i in range(rows):
             for j in range(columns):
-                string += str(random(min, max)) + " "
+                string += str(uniform(min, max)) + " "
             string = string[:-1] + "; "
         string = string [:-2]
         return np.matrix(string)
@@ -54,6 +55,30 @@ class Indivdual():
         target_distance_y = target_vector[1]
         x_velocity = self.track.velocity_vector[0]
         y_velocity = self.track.velocity_vector[1]
-        ret_array = np.array([distance_left, distance_up, distance_right, distance_down,
-            target_distance_x, target_distance_y, x_velocity, y_velocity])
+        ret_array = np.array([distance_left, distance_up, distance_right,
+            distance_down, target_distance_x, target_distance_y, x_velocity,
+            y_velocity])
         return ret_array
+
+    def timestep(self):
+        """
+        Takes a timestep.
+
+        Evaluates the inputs and accelerates the track with the output.
+        """
+        output = self.get_input_vector() * self.complete_matrix
+        self.track.accelerate(output)
+
+    def mutate(self):
+        """
+        Mutates certain factors in the input and output matrices.
+        """
+        rows, cols = self.input_matrix.shape
+        x = randint(0, rows - 1)
+        y = randint(0, cols - 1)
+        self.input_matrix[x, y] = uniform(self.min, self.max)
+        rows, cols = self.output_matrix.shape
+        x = randint(0, rows - 1)
+        y = randint(0, cols - 1)
+        self.output_matrix[x, y] = uniform(self.min, self.max)
+        self.complete_matrix = self.input_matrix * self.output_matrix
