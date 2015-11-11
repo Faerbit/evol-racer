@@ -33,7 +33,7 @@ class Individual():
         return np.matrix(string)
 
 
-    def get_input_vector(self):
+    def _get_input_vector(self):
         """
         Returns the input vector for the neural net
 
@@ -67,7 +67,7 @@ class Individual():
 
         Evaluates the inputs and accelerates the track with the output.
         """
-        output = self.get_input_vector() * self.complete_matrix
+        output = self._get_input_vector() * self.complete_matrix
         self.track.accelerate(output)
 
     def mutate(self):

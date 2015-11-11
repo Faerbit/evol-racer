@@ -66,17 +66,17 @@ class IndividualTests(TestCase):
                 self.assertTrue(-50 <= matrix.item(i, j) <= 50)
 
     def test_input_vector_1(self):
-        assertArrayEqual(self.individual.get_input_vector(),
+        assertArrayEqual(self.individual._get_input_vector(),
                 np.array([20, 70, 80, 30, 60, 0, 0, 0]))
 
     def test_input_vector_2(self):
         self.individual.track.accelerate(np.array([10, 0]))
-        assertArrayEqual(self.individual.get_input_vector(),
+        assertArrayEqual(self.individual._get_input_vector(),
                 np.array([30, 70, 70, 30, 50, 0, 10, 0]))
 
     def test_input_vector_3(self):
         self.individual.track.accelerate(np.array([5, -5]))
-        assertArrayEqual(self.individual.get_input_vector(),
+        assertArrayEqual(self.individual._get_input_vector(),
                 np.array([25, 75, 75, 25, 55, 5, 5, -5]))
 
     def test_timestep(self):
