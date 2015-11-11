@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 import numpy as np
 from numpy.testing import assert_array_almost_equal as assertArrayEqual
 from tests.mocks import mock_open
@@ -85,14 +85,13 @@ class IndividualTests(TestCase):
 
     def test_timestep_accelerated(self):
         vector = np.array([20, 70, 80, 30, 60, 0, 0, 0])
-        with patch("individual.Individual.track") as patched_track:
-            with patch("individual.Individual._get_input_vector",
-                    return_value = vector):
-                individual = Individual(patched_track, 0, 10, 7)
-                individual.timestep()
-                result = np.array(vector * individual.complete_matrix)
-                self.assertEqual(len(patched_track.accelerate.call_args_list), 1)
-                assertArrayEqual(patched_track.accelerate.call_args_list[0][0][0], result)
+        self.individual.track = Mock()
+        with patch("individual.Individual._get_input_vector",
+            return_value = vector):
+            self.individual.timestep()
+        result = np.array(vector * self.individual.complete_matrix)
+        self.assertEqual(len(self.individual.track.accelerate.call_args_list), 1)
+        assertArrayEqual(self.individual.track.accelerate.call_args_list[0][0][0], result)
 
     def test_mutate_1(self):
         pre_mutate_input = np.matrix(self.individual.input_matrix)
