@@ -6,6 +6,8 @@ from copy import deepcopy
 class Individual():
     """Represents a neural net belonging to a track."""
 
+    track = ""
+
     def __init__(self, track, min, max, middle_nodes=8):
         self.track = track
         self.middle_nodes = middle_nodes

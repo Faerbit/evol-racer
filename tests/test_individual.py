@@ -83,6 +83,17 @@ class IndividualTests(TestCase):
         self.individual.timestep()
         self.assertEqual(self.individual.track.length, 2)
 
+    def test_timestep_accelerated(self):
+        vector = np.array([20, 70, 80, 30, 60, 0, 0, 0])
+        with patch("individual.Individual.track") as patched_track:
+            with patch("individual.Individual._get_input_vector",
+                    return_value = vector):
+                individual = Individual(patched_track, 0, 10, 7)
+                individual.timestep()
+                result = np.array(vector * individual.complete_matrix)
+                self.assertEqual(len(patched_track.accelerate.call_args_list), 1)
+                assertArrayEqual(patched_track.accelerate.call_args_list[0][0][0], result)
+
     def test_mutate_1(self):
         pre_mutate_input = np.matrix(self.individual.input_matrix)
         pre_mutate_output = np.matrix(self.individual.output_matrix)
